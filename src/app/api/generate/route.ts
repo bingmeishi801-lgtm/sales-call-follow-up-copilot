@@ -81,12 +81,17 @@ function extractJsonObject(content: string) {
 }
 
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
-  const baseUrl = (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  const model = process.env.OPENAI_MODEL?.trim() || "gpt-4.1-mini";
+  const rawBaseUrl = process.env.OPENAI_BASE_URL?.trim() || "https://api.openai.com/v1";
+  const baseUrl = rawBaseUrl.replace(/\/$/, "");
 
   if (!apiKey) {
     return fallbackGenerate(transcript, callType);
+  }
+
+  if (!/^https?:\/\//i.test(baseUrl)) {
+    throw new Error(`Invalid OPENAI_BASE_URL: ${baseUrl}`);
   }
 
   const requestBody = {
