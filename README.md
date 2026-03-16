@@ -13,7 +13,8 @@ Turn sales call transcripts into follow-up emails, CRM notes, pain points, objec
 - Marketing landing page
 - Transcript-to-follow-up app
 - SEO content hubs for `/tools`, `/templates`, and `/guides`
-- First keyword cluster of 10 SEO landing pages built on a reusable App Router pattern
+- **Second keyword cluster live:** 22 SEO landing pages built on the same reusable App Router pattern
+- Stronger internal-linking system across homepage, hubs, and detail pages
 - Waitlist form with API route
 - Lightweight analytics event pipeline
 - Supabase-backed magic link sign-in
@@ -67,9 +68,33 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - The dynamic route at `src/app/[category]/[slug]/page.tsx` statically generates keyword pages from that config
 - Shared page UI lives in `src/components/seo-page-shell.tsx`
 - Category hubs live at `/tools`, `/templates`, and `/guides`
+- Homepage now surfaces featured keyword pages plus category-specific cluster modules
+- Detail pages now use stronger internal linking via explicit related pages, same-topic recommendations, and next-read blocks
+- Hub pages now show featured entries and act as a stronger bridge into high-intent detail pages
 - Canonical metadata is set globally and overridden on keyword detail pages
 - `src/app/sitemap.ts` and `src/app/robots.ts` generate search-engine discovery files automatically
-- To add more keyword pages later, the fastest path is to append new entries in `seoPages` and link related pages through `relatedSlugs`
+- **Sitemap already auto-covers all SEO pages** because it maps directly from `seoPages`
+- To add more keyword pages later, the fastest path is to append new entries in `seoPages`, set `topic`, mark a few as `featured`, and wire `relatedSlugs`
+
+## Second batch keywords added
+### Tools
+- `sales-call-recap-generator`
+- `sales-objection-tracker-ai`
+- `follow-up-email-ai-tool`
+- `crm-note-ai-software`
+- `discovery-call-notes-ai`
+
+### Templates
+- `sales-call-recap-template`
+- `objection-handling-template`
+- `crm-note-format`
+- `discovery-call-summary-example`
+
+### Guides
+- `how-to-write-a-sales-call-recap`
+- `how-to-document-sales-objections-after-a-call`
+- `sales-call-summary-best-practices`
+- `follow-up-email-best-practices`
 
 ## MVP outputs
 - Call Summary

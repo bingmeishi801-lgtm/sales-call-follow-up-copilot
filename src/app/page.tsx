@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { SignInButton } from "@/components/sign-in-button";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { trackEvent } from "@/lib/analytics";
-import { getPagesByCategory } from "@/lib/seo-pages";
+import { getFeaturedPages, getPagesByCategory } from "@/lib/seo-pages";
 
 const features = [
   {
@@ -47,25 +47,24 @@ const hubCards = [
   {
     title: "Tools",
     href: "/tools",
-    description: "Intent-driven pages for people actively looking for generators and summary tools.",
+    description: "Intent-driven pages for people actively looking for generators, AI tools, and summary software.",
   },
   {
     title: "Templates",
     href: "/templates",
-    description: "Reusable structures for follow-up emails, discovery notes, and CRM updates.",
+    description: "Reusable structures for follow-up emails, discovery notes, CRM updates, and recap formats.",
   },
   {
     title: "Guides",
     href: "/guides",
-    description: "Educational pages that explain how to handle post-call workflow better.",
+    description: "Educational pages covering best practices, tips, and how-to workflows for post-call execution.",
   },
 ];
 
-const featuredPages = [
-  ...getPagesByCategory("tools").slice(0, 3),
-  ...getPagesByCategory("templates").slice(0, 1),
-  ...getPagesByCategory("guides").slice(0, 2),
-];
+const featuredPages = getFeaturedPages().slice(0, 9);
+const toolPages = getPagesByCategory("tools").slice(0, 4);
+const templatePages = getPagesByCategory("templates").slice(0, 4);
+const guidePages = getPagesByCategory("guides").slice(0, 4);
 
 export default function Home() {
   useEffect(() => {
@@ -190,6 +189,59 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="border-y border-white/10 bg-white/[0.03]">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Featured pages</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Second keyword batch is now part of the cluster</h2>
+            <p className="mt-4 text-base leading-8 text-slate-300">
+              Start from the strongest entry pages, then branch into tools, templates, and guides based on search intent.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {featuredPages.map((page) => (
+              <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="rounded-[24px] border border-white/10 bg-slate-950/60 p-5 transition hover:border-cyan-400/40 hover:bg-slate-950">
+                <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">{page.category}</p>
+                <h3 className="mt-3 text-lg font-semibold text-white">{page.keyword}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-300">{page.description}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-20">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Popular clusters</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Browse by search intent, then jump to the next best page</h2>
+          </div>
+          <Link href="/app" className="text-sm font-medium text-cyan-200 hover:text-cyan-100">Or skip straight to the product →</Link>
+        </div>
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {[
+            ["Tools", toolPages, "/tools"],
+            ["Templates", templatePages, "/templates"],
+            ["Guides", guidePages, "/guides"],
+          ].map(([label, pages, href]) => (
+            <div key={label as string} className="rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-xl font-semibold text-white">{label as string}</h3>
+                <Link href={href as string} className="text-sm text-cyan-200 hover:text-cyan-100">View all</Link>
+              </div>
+              <div className="mt-5 space-y-3">
+                {(pages as ReturnType<typeof getPagesByCategory>).map((page) => (
+                  <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="block rounded-2xl border border-white/10 bg-slate-950/60 p-4 transition hover:border-cyan-400/40 hover:bg-slate-950">
+                    <h4 className="text-base font-semibold text-white">{page.keyword}</h4>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">{page.description}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section id="features" className="mx-auto max-w-7xl px-6 py-20">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Features</p>
@@ -210,34 +262,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-white/[0.03]">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Featured pages</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">First keyword batch is live</h2>
-            <p className="mt-4 text-base leading-8 text-slate-300">
-              Start from the highest-intent landing pages or browse the full cluster by category.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {featuredPages.map((page) => (
-              <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="rounded-[24px] border border-white/10 bg-slate-950/60 p-5 transition hover:border-cyan-400/40 hover:bg-slate-950">
-                <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">{page.category}</p>
-                <h3 className="mt-3 text-lg font-semibold text-white">{page.keyword}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{page.description}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="border-b border-white/10 bg-white/[0.03]">
+      <section id="how-it-works" className="border-y border-white/10 bg-white/[0.03]">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <div className="grid gap-6 lg:grid-cols-3">
             {[
               ["Paste transcript", "Drop in a transcript from your discovery call, demo, or follow-up conversation."],
-              ["Generate assets", "Get structured outputs for email, CRM, objections, pain points, and next steps."],
-              ["Copy and move", "Use the outputs immediately in your CRM, inbox, or team workflow."],
+              ["Generate assets", "Get structured outputs for email, CRM, objections, pain points, summaries, and next steps."],
+              ["Copy and move", "Use the outputs immediately in your CRM, inbox, recap doc, or team workflow."],
             ].map(([title, description], index) => (
               <div key={title} className="rounded-3xl border border-white/10 bg-slate-950/60 p-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400 text-sm font-bold text-slate-950">
