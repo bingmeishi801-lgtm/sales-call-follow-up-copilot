@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SignInButton } from "@/components/sign-in-button";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { trackEvent } from "@/lib/analytics";
+import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 
 type CallType = "discovery" | "demo" | "follow-up";
 
@@ -15,6 +16,19 @@ type GenerateResponse = {
   next_steps: string[];
   follow_up_email: string;
   crm_note: string;
+};
+
+type HistoryItem = {
+  id: string;
+  call_type: string;
+  transcript: string;
+  summary: string;
+  pain_points: string[];
+  objections: string[];
+  next_steps: string[];
+  follow_up_email: string;
+  crm_note: string;
+  created_at: string;
 };
 
 const defaultTranscript = `Rep: Thanks for making the time today. I’d love to understand how your sales team currently handles post-call follow-up.
@@ -37,10 +51,43 @@ export default function AppPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   useEffect(() => {
     void trackEvent("page_view", { page: "app" });
   }, []);
+
+  async function fetchHistory() {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
+    const { data: authData } = await supabase.auth.getSession();
+    const token = authData.session?.access_token;
+    if (!token) {
+      setHistory([]);
+      return;
+    }
+
+    try {
+      setHistoryLoading(true);
+      const res = await fetch("/api/history", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      setHistory(json.items || []);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (userEmail) {
+      void fetchHistory();
+    } else {
+      setHistory([]);
+    }
+  }, [userEmail]);
 
   const sections = useMemo(() => {
     if (!data) return [];
@@ -54,6 +101,30 @@ export default function AppPage() {
       { key: "crm_note", title: "CRM Note", content: data.crm_note },
     ];
   }, [data]);
+
+  async function saveHistory(payload: GenerateResponse) {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
+
+    const { data: authData } = await supabase.auth.getSession();
+    const token = authData.session?.access_token;
+    if (!token) return;
+
+    await fetch("/api/history", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        callType,
+        transcript,
+        ...payload,
+      }),
+    });
+
+    await fetchHistory();
+  }
 
   async function handleGenerate() {
     setError(null);
@@ -87,6 +158,9 @@ export default function AppPage() {
 
       setData(result);
       void trackEvent("generate_success", { callType });
+      if (userEmail) {
+        await saveHistory(result);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
@@ -100,6 +174,19 @@ export default function AppPage() {
     if (key === "follow_up_email") void trackEvent("copy_follow_up_email");
     if (key === "crm_note") void trackEvent("copy_crm_note");
     window.setTimeout(() => setCopied(null), 1600);
+  }
+
+  function loadHistoryItem(item: HistoryItem) {
+    setCallType((item.call_type as CallType) || "discovery");
+    setTranscript(item.transcript);
+    setData({
+      summary: item.summary,
+      pain_points: item.pain_points || [],
+      objections: item.objections || [],
+      next_steps: item.next_steps || [],
+      follow_up_email: item.follow_up_email,
+      crm_note: item.crm_note,
+    });
   }
 
   return (
@@ -117,7 +204,7 @@ export default function AppPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <SignInButton dark />
+            <SignInButton dark onAuthChange={setUserEmail} />
             <Link
               href="/"
               className="inline-flex items-center justify-center rounded-xl border border-white/15 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
@@ -136,7 +223,7 @@ export default function AppPage() {
                   <p className="text-xs text-slate-400">Designed for discovery, demo, and follow-up calls</p>
                 </div>
                 <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
-                  Demo-ready
+                  {userEmail ? "History enabled" : "Demo-ready"}
                 </div>
               </div>
               <div>
@@ -156,7 +243,7 @@ export default function AppPage() {
                 <textarea
                   value={transcript}
                   onChange={(e) => setTranscript(e.target.value)}
-                  className="min-h-[430px] w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-4 text-sm leading-7 text-white outline-none transition focus:border-cyan-400"
+                  className="min-h-[320px] w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-4 text-sm leading-7 text-white outline-none transition focus:border-cyan-400"
                   placeholder="Paste your sales call transcript here..."
                 />
                 <p className="mt-2 text-xs text-slate-400">
@@ -170,6 +257,9 @@ export default function AppPage() {
               >
                 {loading ? "Generating your follow-up assets..." : "Generate outputs"}
               </button>
+              {userEmail ? (
+                <p className="text-xs text-emerald-300">Signed in as {userEmail}. New generations will be saved to Supabase.</p>
+              ) : null}
               {error ? (
                 <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
                   {error}
@@ -186,6 +276,40 @@ export default function AppPage() {
           </section>
 
           <section className="space-y-4">
+            {userEmail ? (
+              <div className="rounded-[28px] border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">Saved history</h2>
+                    <p className="text-xs text-slate-400">Recent generations saved to Supabase</p>
+                  </div>
+                  <button
+                    onClick={() => void fetchHistory()}
+                    className="rounded-xl border border-white/10 px-3 py-2 text-xs text-slate-300 transition hover:bg-white/10"
+                  >
+                    Refresh
+                  </button>
+                </div>
+                <div className="mt-4 space-y-3">
+                  {historyLoading ? <p className="text-sm text-slate-400">Loading history...</p> : null}
+                  {!historyLoading && history.length === 0 ? <p className="text-sm text-slate-400">No saved generations yet.</p> : null}
+                  {history.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => loadHistoryItem(item)}
+                      className="block w-full rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-left transition hover:border-cyan-400/40 hover:bg-slate-950"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-sm font-medium text-white capitalize">{item.call_type} call</span>
+                        <span className="text-xs text-slate-400">{new Date(item.created_at).toLocaleString()}</span>
+                      </div>
+                      <p className="mt-2 line-clamp-2 text-sm text-slate-300">{item.summary}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
             {!data && !loading ? (
               <div className="rounded-[28px] border border-dashed border-white/15 bg-white/5 px-8 py-16 text-center text-slate-300 backdrop-blur">
                 <h2 className="text-2xl font-semibold text-white">Your outputs will show up here</h2>

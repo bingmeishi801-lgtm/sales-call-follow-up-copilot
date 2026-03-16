@@ -7,14 +7,15 @@ Turn sales call transcripts into follow-up emails, CRM notes, pain points, objec
 - TypeScript
 - Tailwind CSS
 - App Router
-- Supabase-ready waitlist and auth
+- Supabase-backed waitlist, auth, and generation history
 
 ## Current product surface
 - Marketing landing page
 - Transcript-to-follow-up app
 - Waitlist form with API route
 - Lightweight analytics event pipeline
-- Supabase-backed magic link sign-in (with graceful fallback)
+- Supabase-backed magic link sign-in
+- Logged-in generation history saved to Supabase
 
 ## Local development
 
@@ -38,8 +39,9 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 ### Notes
 - If `OPENAI_API_KEY` is not provided, the app still works in **fallback demo mode** so the UI can be tested quickly.
-- If Supabase env vars are not provided, the app still shows a **Sign in** entry but falls back to a friendly "not configured yet" message.
+- If Supabase env vars are not provided, the app still shows a **Sign in** entry but falls back gracefully.
 - Waitlist submissions use Supabase when configured; otherwise they fall back to a local JSON file.
+- Generation history is only saved when the user is signed in.
 
 ## Routes
 - `/` landing page
@@ -48,6 +50,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - `/api/waitlist` waitlist submission endpoint
 - `/api/track` lightweight analytics endpoint
 - `/api/auth/status` auth configuration check
+- `/api/history` save and fetch signed-in generation history
 
 ## MVP outputs
 - Call Summary
@@ -58,14 +61,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - CRM Note
 
 ## Supabase setup
-Create a `waitlist` table with at least these columns:
-- `id` uuid primary key default gen_random_uuid()
-- `email` text unique not null
-- `name` text null
-- `source` text null
-- `created_at` timestamptz default now()
-
-Recommended SQL:
+Run this SQL in the Supabase SQL Editor:
 
 ```sql
 create extension if not exists pgcrypto;
@@ -77,4 +73,22 @@ create table if not exists public.waitlist (
   source text,
   created_at timestamptz not null default now()
 );
+
+create table if not exists public.generation_history (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null,
+  user_email text,
+  call_type text not null,
+  transcript text not null,
+  summary text not null,
+  pain_points jsonb not null default '[]'::jsonb,
+  objections jsonb not null default '[]'::jsonb,
+  next_steps jsonb not null default '[]'::jsonb,
+  follow_up_email text not null,
+  crm_note text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_generation_history_user_id_created_at
+  on public.generation_history (user_id, created_at desc);
 ```

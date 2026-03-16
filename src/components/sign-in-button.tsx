@@ -1,16 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 
 type SignInButtonProps = {
   dark?: boolean;
+  onAuthChange?: (userEmail: string | null) => void;
 };
 
-export function SignInButton({ dark = false }: SignInButtonProps) {
+export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
+
+    supabase.auth.getUser().then(({ data }) => {
+      const email = data.user?.email ?? null;
+      setUserEmail(email);
+      onAuthChange?.(email);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      const email = session?.user?.email ?? null;
+      setUserEmail(email);
+      onAuthChange?.(email);
+    });
+
+    return () => authListener.subscription.unsubscribe();
+  }, [onAuthChange]);
 
   async function handleClick() {
     setLoading(true);
@@ -21,6 +42,16 @@ export function SignInButton({ dark = false }: SignInButtonProps) {
       const supabase = createSupabaseBrowserClient();
       if (!supabase) {
         setMessage("Auth not configured yet. Add Supabase env vars to enable sign in.");
+        return;
+      }
+
+      if (userEmail) {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          setMessage(error.message);
+          return;
+        }
+        setMessage("Signed out.");
         return;
       }
 
@@ -60,8 +91,9 @@ export function SignInButton({ dark = false }: SignInButtonProps) {
             : "border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
         }`}
       >
-        {loading ? "Checking..." : "Sign in"}
+        {loading ? "Checking..." : userEmail ? "Sign out" : "Sign in"}
       </button>
+      {userEmail ? <p className={`max-w-xs text-xs ${dark ? "text-emerald-300" : "text-emerald-600"}`}>{userEmail}</p> : null}
       {message ? <p className={`max-w-xs text-xs ${dark ? "text-slate-400" : "text-slate-500"}`}>{message}</p> : null}
     </div>
   );
