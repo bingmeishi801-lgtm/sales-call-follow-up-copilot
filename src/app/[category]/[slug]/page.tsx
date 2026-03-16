@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 import { SeoPageShell } from "@/components/seo-page-shell";
 import { seoPageMap, seoPages } from "@/lib/seo-pages";
 
+type RouteParams = {
+  category: string;
+  slug: string;
+};
+
 export function generateStaticParams() {
   return seoPages.map((page) => ({
     category: page.category,
@@ -10,10 +15,15 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { category: string; slug: string } }): Metadata {
-  const page = seoPageMap[params.slug];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<RouteParams>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  const page = seoPageMap[resolvedParams.slug];
 
-  if (!page || page.category !== params.category) {
+  if (!page || page.category !== resolvedParams.category) {
     return {};
   }
 
@@ -23,10 +33,15 @@ export function generateMetadata({ params }: { params: { category: string; slug:
   };
 }
 
-export default function SeoKeywordPage({ params }: { params: { category: string; slug: string } }) {
-  const page = seoPageMap[params.slug];
+export default async function SeoKeywordPage({
+  params,
+}: {
+  params: Promise<RouteParams>;
+}) {
+  const resolvedParams = await params;
+  const page = seoPageMap[resolvedParams.slug];
 
-  if (!page || page.category !== params.category) {
+  if (!page || page.category !== resolvedParams.category) {
     notFound();
   }
 
