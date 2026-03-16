@@ -63,12 +63,13 @@ function fallbackGenerate(transcript: string, callType: CallType): GenerateRespo
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+  const baseUrl = (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
 
   if (!apiKey) {
     return fallbackGenerate(transcript, callType);
   }
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -90,7 +91,7 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`OpenAI request failed: ${text}`);
+    throw new Error(`LLM request failed: ${text}`);
   }
 
   const json = await response.json();

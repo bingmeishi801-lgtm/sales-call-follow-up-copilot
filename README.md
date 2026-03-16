@@ -35,6 +35,7 @@ Create `.env.local`:
 
 ```bash
 OPENAI_API_KEY=your_key_here
+OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4.1-mini
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
@@ -43,6 +44,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 ### Notes
 - If `OPENAI_API_KEY` is not provided, the app still works in **fallback demo mode** so the UI can be tested quickly.
+- `OPENAI_BASE_URL` supports OpenAI-compatible providers, so you can point generation to a custom API gateway instead of OpenAI official.
 - If Supabase env vars are not provided, the app still shows a **Sign in** entry but falls back gracefully.
 - For fast testing, type `test` in the sign-in prompt to enable local test mode without email delivery.
 - Waitlist submissions use Supabase when configured; otherwise they fall back to a local JSON file.
