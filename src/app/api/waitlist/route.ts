@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 
 type WaitlistEntry = {
   email: string;
@@ -21,6 +22,16 @@ async function loadEntries(): Promise<WaitlistEntry[]> {
   }
 }
 
+async function fallbackSave(entry: WaitlistEntry) {
+  await mkdir(dataDir, { recursive: true });
+  const entries = await loadEntries();
+  const exists = entries.some((item) => item.email === entry.email);
+  if (!exists) {
+    entries.push(entry);
+    await writeFile(dataFile, JSON.stringify(entries, null, 2), "utf8");
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as { email?: string; name?: string; source?: string };
@@ -32,17 +43,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Please enter a valid email." }, { status: 400 });
     }
 
-    await mkdir(dataDir, { recursive: true });
-    const entries = await loadEntries();
+    const entry = { email, name: name || undefined, source, createdAt: new Date().toISOString() };
+    const supabase = createSupabaseServerClient();
 
-    const exists = entries.some((entry) => entry.email === email);
-    if (!exists) {
-      entries.push({ email, name: name || undefined, source, createdAt: new Date().toISOString() });
-      await writeFile(dataFile, JSON.stringify(entries, null, 2), "utf8");
+    if (supabase) {
+      const { error } = await supabase.from("waitlist").upsert(
+        {
+          email: entry.email,
+          name: entry.name ?? null,
+          source: entry.source ?? null,
+        },
+        { onConflict: "email" },
+      );
+
+      if (!error) {
+        return NextResponse.json({ ok: true, message: "You’re on the waitlist.", provider: "supabase" });
+      }
     }
 
-    return NextResponse.json({ ok: true, message: "You’re on the waitlist." });
+    await fallbackSave(entry);
+    return NextResponse.json({ ok: true, message: "You’re on the waitlist.", provider: "fallback" });
   } catch {
-    return NextResponse.json({ ok: true, message: "Thanks — we saved your interest." });
+    return NextResponse.json({ ok: true, message: "Thanks — we saved your interest.", provider: "fallback" });
   }
 }

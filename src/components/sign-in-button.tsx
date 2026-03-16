@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trackEvent } from "@/lib/analytics";
+import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 
 type SignInButtonProps = {
   dark?: boolean;
@@ -17,13 +18,31 @@ export function SignInButton({ dark = false }: SignInButtonProps) {
     void trackEvent("sign_in_clicked");
 
     try {
-      const response = await fetch("/api/auth/status");
-      const data = await response.json();
-      if (data.configured) {
-        setMessage("Auth is configured, but UI sign-in flow is still pending. Next step: wire Supabase Auth.");
-      } else {
+      const supabase = createSupabaseBrowserClient();
+      if (!supabase) {
         setMessage("Auth not configured yet. Add Supabase env vars to enable sign in.");
+        return;
       }
+
+      const email = window.prompt("Enter your email for a magic sign-in link:");
+      if (!email) {
+        setMessage("Sign-in canceled.");
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/app`,
+        },
+      });
+
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
+      setMessage("Magic link sent. Check your inbox.");
     } catch {
       setMessage("Auth not configured yet.");
     } finally {
