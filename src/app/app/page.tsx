@@ -57,6 +57,7 @@ export default function AppPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
 
   useEffect(() => {
     void trackEvent("page_view", { page: "app" });
@@ -95,6 +96,7 @@ export default function AppPage() {
       void fetchHistory();
     } else {
       setHistory([]);
+      setActiveHistoryId(null);
     }
   }, [userEmail]);
 
@@ -127,7 +129,9 @@ export default function AppPage() {
         crm_note: payload.crm_note,
         created_at: new Date().toISOString(),
       };
-      window.localStorage.setItem(TEST_MODE_STORAGE_KEY, JSON.stringify([nextItem, ...parsed].slice(0, 20)));
+      const nextHistory = [nextItem, ...parsed].slice(0, 20);
+      window.localStorage.setItem(TEST_MODE_STORAGE_KEY, JSON.stringify(nextHistory));
+      setActiveHistoryId(nextItem.id);
       await fetchHistory();
       return;
     }
@@ -158,6 +162,7 @@ export default function AppPage() {
   async function handleGenerate() {
     setError(null);
     setCopied(null);
+    setActiveHistoryId(null);
 
     if (!transcript.trim()) {
       setError("Please paste a transcript first.");
@@ -202,7 +207,80 @@ export default function AppPage() {
     setCopied(title);
     if (key === "follow_up_email") void trackEvent("copy_follow_up_email");
     if (key === "crm_note") void trackEvent("copy_crm_note");
+    if (key === "summary") window.setTimeout(() => setCopied(null), 1600);
+    else window.setTimeout(() => setCopied(null), 1600);
+  }
+
+  async function handleCopyAll() {
+    if (!data) return;
+    const content = [
+      `Call Summary\n${data.summary}`,
+      `Key Pain Points\n${data.pain_points.join("\n")}`,
+      `Objections\n${data.objections.join("\n")}`,
+      `Next Steps\n${data.next_steps.join("\n")}`,
+      `Follow-up Email\n${data.follow_up_email}`,
+      `CRM Note\n${data.crm_note}`,
+    ].join("\n\n");
+    await navigator.clipboard.writeText(content);
+    setCopied("All outputs");
     window.setTimeout(() => setCopied(null), 1600);
+  }
+
+  async function deleteHistoryItem(item: HistoryItem) {
+    if (userEmail === TEST_MODE_EMAIL) {
+      const nextHistory = history.filter((entry) => entry.id !== item.id);
+      window.localStorage.setItem(TEST_MODE_STORAGE_KEY, JSON.stringify(nextHistory));
+      setHistory(nextHistory);
+      if (activeHistoryId === item.id) {
+        setActiveHistoryId(null);
+      }
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
+    const { data: authData } = await supabase.auth.getSession();
+    const token = authData.session?.access_token;
+    if (!token) return;
+
+    await fetch("/api/history", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: item.id }),
+    });
+    if (activeHistoryId === item.id) {
+      setActiveHistoryId(null);
+    }
+    await fetchHistory();
+  }
+
+  async function clearAllHistory() {
+    if (userEmail === TEST_MODE_EMAIL) {
+      window.localStorage.removeItem(TEST_MODE_STORAGE_KEY);
+      setHistory([]);
+      setActiveHistoryId(null);
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
+    const { data: authData } = await supabase.auth.getSession();
+    const token = authData.session?.access_token;
+    if (!token) return;
+
+    await fetch("/api/history", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ clearAll: true }),
+    });
+    setHistory([]);
+    setActiveHistoryId(null);
   }
 
   function loadHistoryItem(item: HistoryItem) {
@@ -216,7 +294,14 @@ export default function AppPage() {
       follow_up_email: item.follow_up_email,
       crm_note: item.crm_note,
     });
+    setActiveHistoryId(item.id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  const historySubtitle =
+    userEmail === TEST_MODE_EMAIL
+      ? "Recent generations saved in this browser"
+      : "Recent generations saved to Supabase";
 
   return (
     <main className="min-h-screen bg-[#020817] text-white">
@@ -279,13 +364,22 @@ export default function AppPage() {
                   Tip: give the model a detailed transcript for better pain points, objections, and next steps.
                 </p>
               </div>
-              <button
-                onClick={handleGenerate}
-                disabled={loading}
-                className="inline-flex w-full items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? "Generating your follow-up assets..." : "Generate outputs"}
-              </button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="inline-flex flex-1 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? "Generating your follow-up assets..." : "Generate outputs"}
+                </button>
+                <button
+                  onClick={handleCopyAll}
+                  disabled={!data}
+                  className="inline-flex items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {copied === "All outputs" ? "Copied all" : "Copy all"}
+                </button>
+              </div>
               {userEmail ? (
                 <p className="text-xs text-emerald-300">
                   {userEmail === TEST_MODE_EMAIL
@@ -314,31 +408,56 @@ export default function AppPage() {
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold text-white">Saved history</h2>
-                    <p className="text-xs text-slate-400">Recent generations saved to Supabase</p>
+                    <p className="text-xs text-slate-400">{historySubtitle}</p>
                   </div>
-                  <button
-                    onClick={() => void fetchHistory()}
-                    className="rounded-xl border border-white/10 px-3 py-2 text-xs text-slate-300 transition hover:bg-white/10"
-                  >
-                    Refresh
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => void fetchHistory()}
+                      className="rounded-xl border border-white/10 px-3 py-2 text-xs text-slate-300 transition hover:bg-white/10"
+                    >
+                      Refresh
+                    </button>
+                    <button
+                      onClick={() => void clearAllHistory()}
+                      disabled={history.length === 0}
+                      className="rounded-xl border border-red-400/20 px-3 py-2 text-xs text-red-200 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Clear all
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-4 space-y-3">
                   {historyLoading ? <p className="text-sm text-slate-400">Loading history...</p> : null}
                   {!historyLoading && history.length === 0 ? <p className="text-sm text-slate-400">No saved generations yet.</p> : null}
-                  {history.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => loadHistoryItem(item)}
-                      className="block w-full rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-left transition hover:border-cyan-400/40 hover:bg-slate-950"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-sm font-medium text-white capitalize">{item.call_type} call</span>
-                        <span className="text-xs text-slate-400">{new Date(item.created_at).toLocaleString()}</span>
+                  {history.map((item) => {
+                    const isActive = activeHistoryId === item.id;
+                    return (
+                      <div
+                        key={item.id}
+                        className={`rounded-2xl border p-4 text-left transition ${
+                          isActive
+                            ? "border-cyan-400/50 bg-cyan-400/10"
+                            : "border-white/10 bg-slate-950/70 hover:border-cyan-400/40 hover:bg-slate-950"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <button onClick={() => loadHistoryItem(item)} className="flex-1 text-left">
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-sm font-medium text-white capitalize">{item.call_type} call</span>
+                              <span className="text-xs text-slate-400">{new Date(item.created_at).toLocaleString()}</span>
+                            </div>
+                            <p className="mt-2 line-clamp-2 text-sm text-slate-300">{item.summary}</p>
+                          </button>
+                          <button
+                            onClick={() => void deleteHistoryItem(item)}
+                            className="rounded-lg border border-white/10 px-2 py-1 text-xs text-slate-300 transition hover:bg-white/10"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                      <p className="mt-2 line-clamp-2 text-sm text-slate-300">{item.summary}</p>
-                    </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : null}

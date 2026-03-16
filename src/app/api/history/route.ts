@@ -99,3 +99,40 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Failed to save history" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const user = await getUserFromRequest(request);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const supabase = createSupabaseServerClient();
+    if (!supabase) {
+      return NextResponse.json({ ok: false, error: "Supabase not configured" }, { status: 500 });
+    }
+
+    const body = (await request.json()) as { id?: string; clearAll?: boolean };
+
+    if (body.clearAll) {
+      const { error } = await supabase.from("generation_history").delete().eq("user_id", user.id);
+      if (error) {
+        return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
+      }
+      return NextResponse.json({ ok: true });
+    }
+
+    if (!body.id) {
+      return NextResponse.json({ ok: false, error: "Missing history id" }, { status: 400 });
+    }
+
+    const { error } = await supabase.from("generation_history").delete().eq("id", body.id).eq("user_id", user.id);
+    if (error) {
+      return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ ok: false, error: "Failed to delete history" }, { status: 500 });
+  }
+}
