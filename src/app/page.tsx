@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { SignInButton } from "@/components/sign-in-button";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { trackEvent } from "@/lib/analytics";
-import { getBatchPagesByCategory, getFeaturedPages, getPagesByCategory } from "@/lib/seo-pages";
+import { getBatchPagesByCategory, getFeaturedPages, getPagesByCategory, seoPages } from "@/lib/seo-pages";
 
 const features = [
   {
@@ -29,7 +29,7 @@ const features = [
 const stats = [
   { label: "Outputs per call", value: "6" },
   { label: "Setup time", value: "< 5 min" },
-  { label: "SEO pages live", value: "40" },
+  { label: "SEO pages live", value: String(seoPages.length) },
 ];
 
 const testimonials = [
@@ -61,13 +61,16 @@ const hubCards = [
   },
 ];
 
-const featuredPages = getFeaturedPages().slice(0, 9);
+const featuredPages = getFeaturedPages().slice(0, 12);
 const toolPages = getPagesByCategory("tools").slice(0, 4);
 const templatePages = getPagesByCategory("templates").slice(0, 4);
 const guidePages = getPagesByCategory("guides").slice(0, 4);
-const batchThreeTools = getBatchPagesByCategory("tools", 3, 3);
-const batchThreeTemplates = getBatchPagesByCategory("templates", 3, 3);
-const batchThreeGuides = getBatchPagesByCategory("guides", 3, 3);
+const batchFourTools = getBatchPagesByCategory("tools", 4, 4);
+const batchFourTemplates = getBatchPagesByCategory("templates", 4, 4);
+const batchFourGuides = getBatchPagesByCategory("guides", 4, 4);
+const batchFiveTools = getBatchPagesByCategory("tools", 5, 4);
+const batchFiveTemplates = getBatchPagesByCategory("templates", 5, 4);
+const batchFiveGuides = getBatchPagesByCategory("guides", 5, 4);
 
 export default function Home() {
   useEffect(() => {
@@ -196,7 +199,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 py-20">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Featured pages</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">40 SEO pages live, with batch 3 now wired into the main cluster</h2>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{seoPages.length} SEO pages live, with batch 4 and batch 5 wired into the main cluster</h2>
             <p className="mt-4 text-base leading-8 text-slate-300">
               Start from the strongest entry pages, then branch into tools, templates, and guides based on search intent.
             </p>
@@ -216,28 +219,37 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">New keyword batch</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Third-batch pages now have homepage exposure instead of hiding in deep detail routes</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">New keyword batches</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Batch 4 and batch 5 now have homepage exposure instead of hiding in deep detail routes</h2>
           </div>
           <Link href="/tools" className="text-sm font-medium text-cyan-200 hover:text-cyan-100">Browse all clusters →</Link>
         </div>
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 xl:grid-cols-2">
           {[
-            ["New tools", batchThreeTools, "/tools"],
-            ["New templates", batchThreeTemplates, "/templates"],
-            ["New guides", batchThreeGuides, "/guides"],
-          ].map(([label, pages, href]) => (
-            <div key={label as string} className="rounded-[28px] border border-cyan-400/20 bg-cyan-400/10 p-6 backdrop-blur">
+            ["Batch 4", [["Tools", batchFourTools, "/tools"], ["Templates", batchFourTemplates, "/templates"], ["Guides", batchFourGuides, "/guides"]]],
+            ["Batch 5", [["Tools", batchFiveTools, "/tools"], ["Templates", batchFiveTemplates, "/templates"], ["Guides", batchFiveGuides, "/guides"]]],
+          ].map(([batchLabel, groups]) => (
+            <div key={batchLabel as string} className="rounded-[28px] border border-cyan-400/20 bg-cyan-400/10 p-6 backdrop-blur">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-xl font-semibold text-white">{label as string}</h3>
-                <Link href={href as string} className="text-sm text-cyan-100 hover:text-white">View all</Link>
+                <h3 className="text-2xl font-semibold text-white">{batchLabel as string}</h3>
+                <span className="text-sm text-cyan-100">Fresh pages exposed from the homepage</span>
               </div>
-              <div className="mt-5 space-y-3">
-                {(pages as ReturnType<typeof getPagesByCategory>).map((page) => (
-                  <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="block rounded-2xl border border-white/10 bg-slate-950/60 p-4 transition hover:border-cyan-300 hover:bg-slate-950">
-                    <h4 className="text-base font-semibold text-white">{page.keyword}</h4>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">{page.description}</p>
-                  </Link>
+              <div className="mt-6 grid gap-6 md:grid-cols-3">
+                {(groups as [string, ReturnType<typeof getPagesByCategory>, string][]).map(([label, pages, href]) => (
+                  <div key={label}>
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <h4 className="text-lg font-semibold text-white">{label}</h4>
+                      <Link href={href} className="text-sm text-cyan-100 hover:text-white">View all</Link>
+                    </div>
+                    <div className="space-y-3">
+                      {pages.map((page) => (
+                        <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="block rounded-2xl border border-white/10 bg-slate-950/60 p-4 transition hover:border-cyan-300 hover:bg-slate-950">
+                          <h4 className="text-base font-semibold text-white">{page.keyword}</h4>
+                          <p className="mt-2 text-sm leading-6 text-slate-300">{page.description}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

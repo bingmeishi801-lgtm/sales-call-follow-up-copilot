@@ -10,8 +10,10 @@ import {
 export function SeoHubPage({ category }: { category: SeoPageCategory }) {
   const meta = categoryMeta[category];
   const pages = getPagesByCategory(category);
-  const featured = getFeaturedPagesByCategory(category, 3);
-  const latestBatch = getBatchPagesByCategory(category, 3, 6);
+  const featured = getFeaturedPagesByCategory(category, 6);
+  const batchFour = getBatchPagesByCategory(category, 4, 6);
+  const batchFive = getBatchPagesByCategory(category, 5, 6);
+  const highlightedFreshPages = [...batchFive, ...batchFour].slice(0, 9);
 
   return (
     <main className="min-h-screen bg-[#07111f] text-white">
@@ -43,14 +45,18 @@ export function SeoHubPage({ category }: { category: SeoPageCategory }) {
               <p className="mt-4 text-sm leading-7 text-slate-300">
                 This hub now works as a stronger internal-linking layer: visitors can jump from category pages into high-intent detail pages, then move across same-topic clusters and back into the app.
               </p>
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <div className="mt-6 grid gap-3 sm:grid-cols-4">
                 <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
                   <p className="text-2xl font-semibold text-white">{pages.length}</p>
                   <p className="mt-1 text-sm text-slate-400">Pages in this hub</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
-                  <p className="text-2xl font-semibold text-white">{latestBatch.length}</p>
-                  <p className="mt-1 text-sm text-slate-400">New batch 3 pages highlighted</p>
+                  <p className="text-2xl font-semibold text-white">{batchFour.length}</p>
+                  <p className="mt-1 text-sm text-slate-400">Batch 4 surfaced</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-2xl font-semibold text-white">{batchFive.length}</p>
+                  <p className="mt-1 text-sm text-slate-400">Batch 5 surfaced</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
                   <p className="text-2xl font-semibold text-white">/app</p>
@@ -76,16 +82,16 @@ export function SeoHubPage({ category }: { category: SeoPageCategory }) {
         <section className="pb-10">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">New in batch 3</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">New in batch 4 + 5</p>
               <h2 className="mt-3 text-2xl font-semibold">Fresh keyword pages pushed into this hub</h2>
             </div>
             <p className="hidden text-sm text-slate-400 md:block">These links make sure the newest pages are not orphaned inside the larger cluster.</p>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {latestBatch.map((page) => (
+            {highlightedFreshPages.map((page) => (
               <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="rounded-[24px] border border-cyan-400/20 bg-cyan-400/10 p-5 transition hover:border-cyan-300 hover:bg-cyan-400/15">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs uppercase tracking-[0.16em] text-cyan-100">batch 3</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-cyan-100">batch {page.batch}</p>
                   <span className="rounded-full border border-white/10 px-2 py-1 text-[11px] text-slate-200">{page.topic.replace(/-/g, " ")}</span>
                 </div>
                 <h2 className="mt-3 text-lg font-semibold text-white">{page.keyword}</h2>
@@ -110,7 +116,10 @@ export function SeoHubPage({ category }: { category: SeoPageCategory }) {
                 </div>
                 <h2 className="mt-3 text-xl font-semibold text-white">{page.keyword}</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-300">{page.description}</p>
-                <p className="mt-4 text-sm font-medium text-cyan-200">Open page →</p>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <p className="text-sm font-medium text-cyan-200">Open page →</p>
+                  <span className="rounded-full border border-white/10 px-2 py-1 text-[11px] text-slate-300">batch {page.batch}</span>
+                </div>
               </Link>
             ))}
           </div>

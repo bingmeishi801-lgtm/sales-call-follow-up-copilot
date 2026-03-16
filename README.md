@@ -13,7 +13,7 @@ Turn sales call transcripts into follow-up emails, CRM notes, pain points, objec
 - Marketing landing page
 - Transcript-to-follow-up app
 - SEO content hubs for `/tools`, `/templates`, and `/guides`
-- **Third keyword cluster live:** 40 total SEO landing pages built on the same reusable App Router pattern
+- **Batch 4 + Batch 5 keyword expansion live:** 94 total SEO landing pages built on the same reusable App Router pattern
 - Stronger internal-linking system across homepage, hubs, and detail pages
 - Waitlist form with API route
 - Lightweight analytics event pipeline
@@ -68,58 +68,63 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - The dynamic route at `src/app/[category]/[slug]/page.tsx` statically generates keyword pages from that config
 - Shared page UI lives in `src/components/seo-page-shell.tsx`
 - Category hubs live at `/tools`, `/templates`, and `/guides`
-- Homepage now surfaces featured keyword pages plus dedicated **batch 3** modules for new tools, templates, and guides
-- Detail pages now use stronger internal linking via explicit related pages, same-topic journeys, same-topic cluster cards, and next-read blocks
-- Hub pages now show featured entries plus a dedicated **New in batch 3** section so fresh pages are not buried
+- Homepage now surfaces featured keyword pages plus dedicated **batch 4** and **batch 5** modules for new tools, templates, and guides
+- Detail pages use stronger internal linking via explicit related pages, same-topic journeys, same-topic cluster cards, and next-read blocks
+- Hub pages show featured entries plus dedicated **batch 4 + batch 5** exposure so fresh pages are not buried
 - Canonical metadata is set globally and overridden on keyword detail pages
 - `src/app/sitemap.ts` and `src/app/robots.ts` generate search-engine discovery files automatically
-- **Sitemap already auto-covers all SEO pages** because it maps directly from `seoPages`
-- To add more keyword pages later, the fastest path is to append new entries in `seoPages`, set `topic`, assign `batch`, mark a few as `featured`, and wire `relatedSlugs`
+- **Sitemap already auto-covers all SEO pages** because it maps directly from `seoPages`; no sitemap code change was needed for this batch
+- To add more keyword pages later, the fastest path is still to append new entries or generator patterns inside `seoPages`, set `topic`, assign `batch`, mark a few as `featured`, and wire `relatedSlugs`
 
-## Third batch keywords added
-### Tools
-- `follow-up-meeting-recap-ai`
-- `crm-notes-ai-generator`
-- `discovery-call-summary-ai-tool`
-- `objection-handling-ai-tool`
-- `sales-call-recap-software`
-- `call-summary-generator-ai`
+## Fourth batch expansion
+This batch kept the same SEO system and pushed adjacent-intent coverage deeper without introducing any new routing layer.
 
-### Templates
-- `follow-up-email-format`
-- `crm-notes-example`
-- `discovery-call-template-format`
-- `objection-response-template`
-- `sales-recap-template-example`
-- `call-summary-format`
+### Batch 4 themes
+- Tool / AI / software pages around:
+  - follow-up
+  - recap
+  - crm notes
+  - discovery call
+  - objections
+  - call summary
+- Adjacent-intent keywords such as:
+  - demo follow-up
+  - sales recap
+  - qualification notes
+  - buyer discovery notes
+  - pricing objections
+  - sales call wrap-up
+- Template / guide coverage for the same clusters so the new tool pages are not isolated
 
-### Guides
-- `follow-up-email-tips-after-sales-call`
-- `how-to-write-crm-notes-for-sales-calls`
-- `discovery-call-best-practices-for-notes`
-- `how-to-handle-sales-objections-after-a-call`
-- `sales-call-recap-best-practices`
-- `how-to-write-a-call-summary-after-a-sales-call`
+## Fifth batch expansion
+This batch added another layer of intent variants and made the topical cluster feel more mature.
+
+### Batch 5 themes
+- Generator pages for adjacent high-intent post-call workflows
+- Example / format pages for templates and note structures
+- How-to / tips / best-practices pages to keep the guide layer dense enough to support internal distribution
+- More cross-category links from homepage and hubs so new pages get immediate exposure
 
 ## Total SEO page count
-- Tools: 12
-- Templates: 14
-- Guides: 14
-- **Total: 40**
+- Tools: 30
+- Templates: 32
+- Guides: 32
+- **Total: 94**
 
-## Fastest path to 80–100 pages later
-1. Keep using `src/lib/seo-pages.ts` as the only content source of truth.
-2. Expand by **topic x intent modifier** instead of inventing new page systems.
+## Fastest path to 150–200 pages later
+1. Keep `src/lib/seo-pages.ts` as the only content source of truth.
+2. Continue expanding by **topic x intent modifier x adjacent phrasing** instead of inventing a second SEO system.
 3. For each topic (`follow-up`, `recap`, `crm notes`, `discovery call`, `objections`, `call summary`), keep shipping:
-   - tool / ai / generator / software variants
-   - template / example / format variants
-   - how to / best practices / tips variants
-4. Add another 6–10 pages per batch, then surface them in:
-   - homepage featured or new-batch modules
-   - hub `featured` + `new batch` sections
-   - detail-page `relatedSlugs` + same-topic journey
-5. Reuse current `batch`, `topic`, `featured`, and `relatedSlugs` fields so new pages automatically inherit sitemap coverage and internal-linking behavior.
-6. If scaling further, consider adding small topic-level hub modules on the homepage (for example follow-up cluster, CRM-notes cluster, recap cluster) without changing the route architecture.
+   - tool / ai / generator / software
+   - template / example / format
+   - how to / best practices / tips
+4. Reuse the current batch 4/5 generator pattern to stamp out another 40–80 pages with small keyword-definition changes instead of hand-writing giant arrays.
+5. Keep homepage and hub exposure lightweight:
+   - add a new batch section
+   - feature a few new entries per category
+   - let detail-page related links inherit from topic + batch logic
+6. If scaling to 150–200, the **lowest-effort path** is to add more keyword-variant definitions to the generator config rather than creating new React components or route files.
+7. Before pushing far past 150, it is reasonable to pause and watch Search Console so the next pages follow the clusters that actually start getting impressions.
 
 ## MVP outputs
 - Call Summary
