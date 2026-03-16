@@ -64,10 +64,20 @@ function fallbackGenerate(transcript: string, callType: CallType): GenerateRespo
 
 function normalizeJsonContent(content: string) {
   const trimmed = content.trim();
-  if (trimmed.startsWith("```") ) {
+  if (trimmed.startsWith("```")) {
     return trimmed.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
   }
   return trimmed;
+}
+
+function extractJsonObject(content: string) {
+  const normalized = normalizeJsonContent(content);
+  const firstBrace = normalized.indexOf("{");
+  const lastBrace = normalized.lastIndexOf("}");
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    return normalized.slice(firstBrace, lastBrace + 1);
+  }
+  return normalized;
 }
 
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
@@ -126,7 +136,7 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
     throw new Error("Model returned empty content.");
   }
 
-  const parsed = JSON.parse(normalizeJsonContent(content)) as GenerateResponse;
+  const parsed = JSON.parse(extractJsonObject(content)) as GenerateResponse;
   return {
     summary: parsed.summary || "",
     pain_points: parsed.pain_points || [],
@@ -158,8 +168,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error(error);
+    const message = error instanceof Error ? error.message : "We couldn’t generate the output this time. Please retry.";
     return NextResponse.json(
-      { error: "We couldn’t generate the output this time. Please retry." },
+      { error: message },
       { status: 500 },
     );
   }
