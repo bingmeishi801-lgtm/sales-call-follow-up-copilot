@@ -31,6 +31,9 @@ type HistoryItem = {
   created_at: string;
 };
 
+const TEST_MODE_EMAIL = "test-mode@local.dev";
+const TEST_MODE_STORAGE_KEY = "sales-call-follow-up-history";
+
 const defaultTranscript = `Rep: Thanks for making the time today. I’d love to understand how your sales team currently handles post-call follow-up.
 Prospect: Right now it’s mostly manual. Reps write their own recap emails and update HubSpot after the call.
 Rep: What’s the biggest challenge with that process?
@@ -60,6 +63,12 @@ export default function AppPage() {
   }, []);
 
   async function fetchHistory() {
+    if (userEmail === TEST_MODE_EMAIL) {
+      const raw = window.localStorage.getItem(TEST_MODE_STORAGE_KEY);
+      setHistory(raw ? (JSON.parse(raw) as HistoryItem[]) : []);
+      return;
+    }
+
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
     const { data: authData } = await supabase.auth.getSession();
@@ -103,6 +112,26 @@ export default function AppPage() {
   }, [data]);
 
   async function saveHistory(payload: GenerateResponse) {
+    if (userEmail === TEST_MODE_EMAIL) {
+      const current = window.localStorage.getItem(TEST_MODE_STORAGE_KEY);
+      const parsed = current ? (JSON.parse(current) as HistoryItem[]) : [];
+      const nextItem: HistoryItem = {
+        id: crypto.randomUUID(),
+        call_type: callType,
+        transcript,
+        summary: payload.summary,
+        pain_points: payload.pain_points,
+        objections: payload.objections,
+        next_steps: payload.next_steps,
+        follow_up_email: payload.follow_up_email,
+        crm_note: payload.crm_note,
+        created_at: new Date().toISOString(),
+      };
+      window.localStorage.setItem(TEST_MODE_STORAGE_KEY, JSON.stringify([nextItem, ...parsed].slice(0, 20)));
+      await fetchHistory();
+      return;
+    }
+
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
 
@@ -258,7 +287,11 @@ export default function AppPage() {
                 {loading ? "Generating your follow-up assets..." : "Generate outputs"}
               </button>
               {userEmail ? (
-                <p className="text-xs text-emerald-300">Signed in as {userEmail}. New generations will be saved to Supabase.</p>
+                <p className="text-xs text-emerald-300">
+                  {userEmail === TEST_MODE_EMAIL
+                    ? "Test mode enabled. New generations will be saved locally in this browser."
+                    : `Signed in as ${userEmail}. New generations will be saved to Supabase.`}
+                </p>
               ) : null}
               {error ? (
                 <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">

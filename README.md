@@ -15,6 +15,7 @@ Turn sales call transcripts into follow-up emails, CRM notes, pain points, objec
 - Waitlist form with API route
 - Lightweight analytics event pipeline
 - Supabase-backed magic link sign-in
+- Test mode sign-in for fast QA without email limits
 - Logged-in generation history saved to Supabase
 
 ## Local development
@@ -40,6 +41,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ### Notes
 - If `OPENAI_API_KEY` is not provided, the app still works in **fallback demo mode** so the UI can be tested quickly.
 - If Supabase env vars are not provided, the app still shows a **Sign in** entry but falls back gracefully.
+- For fast testing, type `test` in the sign-in prompt to enable local test mode without email delivery.
 - Waitlist submissions use Supabase when configured; otherwise they fall back to a local JSON file.
 - Generation history is only saved when the user is signed in.
 

@@ -9,12 +9,21 @@ type SignInButtonProps = {
   onAuthChange?: (userEmail: string | null) => void;
 };
 
+const TEST_EMAIL = "test-mode@local.dev";
+
 export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
+    const testModeEmail = typeof window !== "undefined" ? window.localStorage.getItem("test-mode-email") : null;
+    if (testModeEmail) {
+      setUserEmail(testModeEmail);
+      onAuthChange?.(testModeEmail);
+      return;
+    }
+
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
 
@@ -39,13 +48,23 @@ export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) 
     void trackEvent("sign_in_clicked");
 
     try {
+      const isTestMode = userEmail === TEST_EMAIL;
       const supabase = createSupabaseBrowserClient();
-      if (!supabase) {
-        setMessage("Auth not configured yet. Add Supabase env vars to enable sign in.");
-        return;
-      }
 
       if (userEmail) {
+        if (isTestMode) {
+          window.localStorage.removeItem("test-mode-email");
+          setUserEmail(null);
+          onAuthChange?.(null);
+          setMessage("Signed out of test mode.");
+          return;
+        }
+
+        if (!supabase) {
+          setMessage("Auth not configured yet.");
+          return;
+        }
+
         const { error } = await supabase.auth.signOut();
         if (error) {
           setMessage(error.message);
@@ -55,14 +74,30 @@ export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) 
         return;
       }
 
-      const email = window.prompt("Enter your email for a magic sign-in link:");
-      if (!email) {
+      const mode = window.prompt(
+        "Type 'test' for local test mode, or enter your email for a magic sign-in link:",
+      );
+
+      if (!mode) {
         setMessage("Sign-in canceled.");
         return;
       }
 
+      if (mode.trim().toLowerCase() === "test") {
+        window.localStorage.setItem("test-mode-email", TEST_EMAIL);
+        setUserEmail(TEST_EMAIL);
+        onAuthChange?.(TEST_EMAIL);
+        setMessage("Test mode enabled. History will be saved locally for quick testing.");
+        return;
+      }
+
+      if (!supabase) {
+        setMessage("Auth not configured yet. Add Supabase env vars to enable sign in.");
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithOtp({
-        email,
+        email: mode.trim(),
         options: {
           emailRedirectTo: `${window.location.origin}/app`,
         },
@@ -93,7 +128,9 @@ export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) 
       >
         {loading ? "Checking..." : userEmail ? "Sign out" : "Sign in"}
       </button>
-      {userEmail ? <p className={`max-w-xs text-xs ${dark ? "text-emerald-300" : "text-emerald-600"}`}>{userEmail}</p> : null}
+      {userEmail ? (
+        <p className={`max-w-xs text-xs ${dark ? "text-emerald-300" : "text-emerald-600"}`}>{userEmail}</p>
+      ) : null}
       {message ? <p className={`max-w-xs text-xs ${dark ? "text-slate-400" : "text-slate-500"}`}>{message}</p> : null}
     </div>
   );
