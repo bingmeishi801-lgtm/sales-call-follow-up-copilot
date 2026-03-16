@@ -54,6 +54,8 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - `/templates` SEO hub for template-intent keywords
 - `/guides` SEO hub for educational keywords
 - `/[category]/[slug]` reusable SEO landing page route powered by `src/lib/seo-pages.ts`
+- `/sitemap.xml` generated sitemap
+- `/robots.txt` generated robots rules
 - `/api/generate` generation endpoint
 - `/api/waitlist` waitlist submission endpoint
 - `/api/track` lightweight analytics endpoint
@@ -65,6 +67,8 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - The dynamic route at `src/app/[category]/[slug]/page.tsx` statically generates keyword pages from that config
 - Shared page UI lives in `src/components/seo-page-shell.tsx`
 - Category hubs live at `/tools`, `/templates`, and `/guides`
+- Canonical metadata is set globally and overridden on keyword detail pages
+- `src/app/sitemap.ts` and `src/app/robots.ts` generate search-engine discovery files automatically
 - To add more keyword pages later, the fastest path is to append new entries in `seoPages` and link related pages through `relatedSlugs`
 
 ## MVP outputs
