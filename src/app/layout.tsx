@@ -35,6 +35,9 @@ export const metadata: Metadata = {
     title: "Sales Call Follow-up Copilot",
     description: siteConfig.description,
   },
+  verification: {
+    google: "eBZiUBW1vRkCA4nSDsrQz7QBBXsJjtt3O6jZEAVwBcg",
+  },
 };
 
 export default function RootLayout({
