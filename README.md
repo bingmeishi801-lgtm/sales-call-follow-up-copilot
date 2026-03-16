@@ -13,7 +13,7 @@ Turn sales call transcripts into follow-up emails, CRM notes, pain points, objec
 - Marketing landing page
 - Transcript-to-follow-up app
 - SEO content hubs for `/tools`, `/templates`, and `/guides`
-- **Second keyword cluster live:** 22 SEO landing pages built on the same reusable App Router pattern
+- **Third keyword cluster live:** 40 total SEO landing pages built on the same reusable App Router pattern
 - Stronger internal-linking system across homepage, hubs, and detail pages
 - Waitlist form with API route
 - Lightweight analytics event pipeline
@@ -68,33 +68,58 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - The dynamic route at `src/app/[category]/[slug]/page.tsx` statically generates keyword pages from that config
 - Shared page UI lives in `src/components/seo-page-shell.tsx`
 - Category hubs live at `/tools`, `/templates`, and `/guides`
-- Homepage now surfaces featured keyword pages plus category-specific cluster modules
-- Detail pages now use stronger internal linking via explicit related pages, same-topic recommendations, and next-read blocks
-- Hub pages now show featured entries and act as a stronger bridge into high-intent detail pages
+- Homepage now surfaces featured keyword pages plus dedicated **batch 3** modules for new tools, templates, and guides
+- Detail pages now use stronger internal linking via explicit related pages, same-topic journeys, same-topic cluster cards, and next-read blocks
+- Hub pages now show featured entries plus a dedicated **New in batch 3** section so fresh pages are not buried
 - Canonical metadata is set globally and overridden on keyword detail pages
 - `src/app/sitemap.ts` and `src/app/robots.ts` generate search-engine discovery files automatically
 - **Sitemap already auto-covers all SEO pages** because it maps directly from `seoPages`
-- To add more keyword pages later, the fastest path is to append new entries in `seoPages`, set `topic`, mark a few as `featured`, and wire `relatedSlugs`
+- To add more keyword pages later, the fastest path is to append new entries in `seoPages`, set `topic`, assign `batch`, mark a few as `featured`, and wire `relatedSlugs`
 
-## Second batch keywords added
+## Third batch keywords added
 ### Tools
-- `sales-call-recap-generator`
-- `sales-objection-tracker-ai`
-- `follow-up-email-ai-tool`
-- `crm-note-ai-software`
-- `discovery-call-notes-ai`
+- `follow-up-meeting-recap-ai`
+- `crm-notes-ai-generator`
+- `discovery-call-summary-ai-tool`
+- `objection-handling-ai-tool`
+- `sales-call-recap-software`
+- `call-summary-generator-ai`
 
 ### Templates
-- `sales-call-recap-template`
-- `objection-handling-template`
-- `crm-note-format`
-- `discovery-call-summary-example`
+- `follow-up-email-format`
+- `crm-notes-example`
+- `discovery-call-template-format`
+- `objection-response-template`
+- `sales-recap-template-example`
+- `call-summary-format`
 
 ### Guides
-- `how-to-write-a-sales-call-recap`
-- `how-to-document-sales-objections-after-a-call`
-- `sales-call-summary-best-practices`
-- `follow-up-email-best-practices`
+- `follow-up-email-tips-after-sales-call`
+- `how-to-write-crm-notes-for-sales-calls`
+- `discovery-call-best-practices-for-notes`
+- `how-to-handle-sales-objections-after-a-call`
+- `sales-call-recap-best-practices`
+- `how-to-write-a-call-summary-after-a-sales-call`
+
+## Total SEO page count
+- Tools: 12
+- Templates: 14
+- Guides: 14
+- **Total: 40**
+
+## Fastest path to 80–100 pages later
+1. Keep using `src/lib/seo-pages.ts` as the only content source of truth.
+2. Expand by **topic x intent modifier** instead of inventing new page systems.
+3. For each topic (`follow-up`, `recap`, `crm notes`, `discovery call`, `objections`, `call summary`), keep shipping:
+   - tool / ai / generator / software variants
+   - template / example / format variants
+   - how to / best practices / tips variants
+4. Add another 6–10 pages per batch, then surface them in:
+   - homepage featured or new-batch modules
+   - hub `featured` + `new batch` sections
+   - detail-page `relatedSlugs` + same-topic journey
+5. Reuse current `batch`, `topic`, `featured`, and `relatedSlugs` fields so new pages automatically inherit sitemap coverage and internal-linking behavior.
+6. If scaling further, consider adding small topic-level hub modules on the homepage (for example follow-up cluster, CRM-notes cluster, recap cluster) without changing the route architecture.
 
 ## MVP outputs
 - Call Summary

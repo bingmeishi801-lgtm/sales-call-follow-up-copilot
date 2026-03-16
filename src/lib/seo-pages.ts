@@ -23,6 +23,7 @@ export type SeoPage = {
   relatedSlugs: string[];
   topic: SeoTopic;
   featured?: boolean;
+  batch?: 1 | 2 | 3;
 };
 
 export const seoPages: SeoPage[] = [
@@ -30,6 +31,7 @@ export const seoPages: SeoPage[] = [
     slug: "sales-follow-up-email-generator",
     category: "tools",
     topic: "follow-up",
+    batch: 1,
     featured: true,
     keyword: "sales follow up email generator",
     title: "Sales Follow Up Email Generator | Write Faster After Every Call",
@@ -58,12 +60,13 @@ export const seoPages: SeoPage[] = [
           "Yes. The app works well for discovery calls, demos, and general follow-up conversations where you need a quick recap email.",
       },
     ],
-    relatedSlugs: ["sales-follow-up-email-template", "how-to-write-a-sales-follow-up-email", "sales-call-summary-tool"],
+    relatedSlugs: ["sales-follow-up-email-template", "how-to-write-a-sales-follow-up-email", "sales-call-summary-tool", "follow-up-email-format", "follow-up-email-tips-after-sales-call"],
   },
   {
     slug: "crm-note-generator",
     category: "tools",
     topic: "crm-notes",
+    batch: 1,
     featured: true,
     keyword: "crm note generator",
     title: "CRM Note Generator | Convert Sales Calls Into Structured Notes",
@@ -91,12 +94,13 @@ export const seoPages: SeoPage[] = [
         answer: "No. It helps you create better notes faster, then copy them into your CRM workflow.",
       },
     ],
-    relatedSlugs: ["crm-notes-template", "how-to-write-crm-notes-after-a-sales-call", "discovery-call-summary-generator"],
+    relatedSlugs: ["crm-notes-template", "how-to-write-crm-notes-after-a-sales-call", "discovery-call-summary-generator", "crm-notes-example", "how-to-write-crm-notes-for-sales-calls"],
   },
   {
     slug: "discovery-call-summary-generator",
     category: "tools",
     topic: "discovery-call",
+    batch: 1,
     featured: true,
     keyword: "discovery call summary generator",
     title: "Discovery Call Summary Generator | Summarize Buyer Calls Fast",
@@ -125,12 +129,13 @@ export const seoPages: SeoPage[] = [
           "Yes. It works for quick internal recaps, coaching notes, and handoff prep as well as buyer-facing follow-up.",
       },
     ],
-    relatedSlugs: ["how-to-summarize-a-discovery-call", "sales-call-summary-tool", "crm-note-generator"],
+    relatedSlugs: ["how-to-summarize-a-discovery-call", "sales-call-summary-tool", "crm-note-generator", "discovery-call-template-format", "discovery-call-best-practices-for-notes"],
   },
   {
     slug: "sales-call-summary-tool",
     category: "tools",
     topic: "summary",
+    batch: 1,
     featured: true,
     keyword: "sales call summary tool",
     title: "Sales Call Summary Tool | From Transcript to Follow-Up Assets",
@@ -159,12 +164,13 @@ export const seoPages: SeoPage[] = [
           "Yes. Cleaner transcripts help, but even rough call notes can usually be converted into a useful draft for follow-up work.",
       },
     ],
-    relatedSlugs: ["discovery-call-summary-generator", "sales-follow-up-email-generator", "crm-note-generator"],
+    relatedSlugs: ["discovery-call-summary-generator", "sales-follow-up-email-generator", "crm-note-generator", "call-summary-format", "how-to-write-a-call-summary-after-a-sales-call"],
   },
   {
     slug: "sales-call-recap-generator",
     category: "tools",
     topic: "recap",
+    batch: 2,
     featured: true,
     keyword: "sales call recap generator",
     title: "Sales Call Recap Generator | Create Fast Buyer Recaps After Calls",
@@ -193,12 +199,13 @@ export const seoPages: SeoPage[] = [
           "They overlap, but a recap usually emphasizes clarity and next-step communication while a summary may be broader and more internal.",
       },
     ],
-    relatedSlugs: ["sales-call-summary-tool", "sales-call-recap-template", "how-to-write-a-sales-call-recap"],
+    relatedSlugs: ["sales-call-summary-tool", "sales-call-recap-template", "how-to-write-a-sales-call-recap", "sales-recap-template-example", "sales-call-recap-best-practices"],
   },
   {
     slug: "sales-objection-tracker-ai",
     category: "tools",
     topic: "objections",
+    batch: 2,
     keyword: "sales objection tracker ai",
     title: "Sales Objection Tracker AI | Capture Objections From Call Transcripts",
     description:
@@ -226,12 +233,13 @@ export const seoPages: SeoPage[] = [
           "Yes. The goal is to pull out high-signal buyer concerns no matter whether they are about price, timing, integrations, or internal buy-in.",
       },
     ],
-    relatedSlugs: ["objection-handling-template", "how-to-document-sales-objections-after-a-call", "discovery-call-summary-generator"],
+    relatedSlugs: ["objection-handling-template", "how-to-document-sales-objections-after-a-call", "discovery-call-summary-generator", "objection-response-template", "how-to-handle-sales-objections-after-a-call"],
   },
   {
     slug: "follow-up-email-ai-tool",
     category: "tools",
     topic: "follow-up",
+    batch: 2,
     keyword: "follow up email ai tool",
     title: "Follow Up Email AI Tool | Generate Better Post-Call Emails Fast",
     description:
@@ -259,12 +267,13 @@ export const seoPages: SeoPage[] = [
           "Absolutely. The best workflow is generate first, then review and tailor for the buyer before you hit send.",
       },
     ],
-    relatedSlugs: ["sales-follow-up-email-generator", "sales-follow-up-email-template", "how-to-write-a-sales-follow-up-email"],
+    relatedSlugs: ["sales-follow-up-email-generator", "sales-follow-up-email-template", "how-to-write-a-sales-follow-up-email", "follow-up-email-format", "follow-up-email-tips-after-sales-call"],
   },
   {
     slug: "crm-note-ai-software",
     category: "tools",
     topic: "crm-notes",
+    batch: 2,
     keyword: "crm note ai software",
     title: "CRM Note AI Software | Faster Post-Call Logging for Sales Teams",
     description:
@@ -292,12 +301,13 @@ export const seoPages: SeoPage[] = [
           "Yes. Recording tools capture the conversation. This helps turn that conversation into a CRM-ready output your team can actually use.",
       },
     ],
-    relatedSlugs: ["crm-note-generator", "crm-notes-template", "how-to-write-crm-notes-after-a-sales-call"],
+    relatedSlugs: ["crm-note-generator", "crm-notes-template", "how-to-write-crm-notes-after-a-sales-call", "crm-notes-example", "how-to-write-crm-notes-for-sales-calls"],
   },
   {
     slug: "discovery-call-notes-ai",
     category: "tools",
     topic: "discovery-call",
+    batch: 2,
     keyword: "discovery call notes ai",
     title: "Discovery Call Notes AI | Turn Buyer Calls Into Structured Notes",
     description:
@@ -325,12 +335,220 @@ export const seoPages: SeoPage[] = [
           "It helps you create a solid first draft quickly, especially when you have multiple calls and limited time for manual cleanup.",
       },
     ],
-    relatedSlugs: ["discovery-call-summary-generator", "discovery-call-notes-template", "how-to-summarize-a-discovery-call"],
+    relatedSlugs: ["discovery-call-summary-generator", "discovery-call-notes-template", "how-to-summarize-a-discovery-call", "discovery-call-template-format", "discovery-call-best-practices-for-notes"],
+  },
+  {
+    slug: "follow-up-meeting-recap-ai",
+    category: "tools",
+    topic: "follow-up",
+    batch: 3,
+    featured: true,
+    keyword: "follow up meeting recap ai",
+    title: "Follow Up Meeting Recap AI | Turn Calls Into Buyer Recaps Fast",
+    description:
+      "Use AI to turn a sales conversation into a clean follow up meeting recap with key points, commitments, and next steps.",
+    heroTitle: "AI follow-up meeting recap for teams that need clean post-call communication",
+    heroDescription:
+      "Generate a concise recap from your call transcript so buyers and teammates leave with the same understanding of what happens next.",
+    intro:
+      "Many follow-up workflows break because the recap never gets written clearly. This page targets buyers searching for AI help with recap creation, especially after discovery and solution calls.",
+    benefits: [
+      "Convert call transcripts into recap copy faster.",
+      "Keep commitments and next steps visible right after the meeting.",
+      "Support both buyer-facing recaps and internal alignment.",
+    ],
+    audiences: ["Account executives", "Customer-facing founders", "Teams running multi-stakeholder deals"],
+    faqs: [
+      {
+        question: "What is the difference between a recap and a follow-up email?",
+        answer:
+          "A recap focuses on what happened and what comes next, while a follow-up email may also include persuasion, resources, and scheduling context.",
+      },
+      {
+        question: "Can recap AI still sound personal?",
+        answer:
+          "Yes. The best workflow is to generate the structure from the transcript, then lightly edit tone and details before sending.",
+      },
+    ],
+    relatedSlugs: ["sales-call-recap-generator", "follow-up-email-format", "follow-up-email-tips-after-sales-call", "sales-follow-up-email-generator"],
+  },
+  {
+    slug: "crm-notes-ai-generator",
+    category: "tools",
+    topic: "crm-notes",
+    batch: 3,
+    featured: true,
+    keyword: "crm notes ai generator",
+    title: "CRM Notes AI Generator | Create Structured Sales Notes in Seconds",
+    description:
+      "Generate structured CRM notes from call transcripts with AI so reps can log updates faster and keep pipeline context clean.",
+    heroTitle: "A CRM notes AI generator for teams that want faster logging and cleaner notes",
+    heroDescription:
+      "Turn a sales call transcript into concise CRM-ready notes covering context, pain points, objections, and next steps.",
+    intro:
+      "This keyword targets visitors who already know they want AI help, but still care about note quality and structure. It fits naturally into the CRM-notes cluster and supports strong cross-links into templates and educational pages.",
+    benefits: [
+      "Generate a first draft that reps can review quickly.",
+      "Improve consistency across CRM updates.",
+      "Reduce lost context between the meeting and the pipeline review.",
+    ],
+    audiences: ["AEs logging every call", "Revenue teams improving note quality", "Founders running lean sales ops"],
+    faqs: [
+      {
+        question: "Should AI-generated CRM notes still be reviewed?",
+        answer:
+          "Yes. AI is best used to create the draft fast, while the rep confirms accuracy and trims or expands important details.",
+      },
+      {
+        question: "Can this help with HubSpot and Salesforce workflows?",
+        answer:
+          "Yes. The output is designed to be copied into whichever CRM system your team already uses.",
+      },
+    ],
+    relatedSlugs: ["crm-note-generator", "crm-notes-example", "how-to-write-crm-notes-for-sales-calls", "crm-notes-template"],
+  },
+  {
+    slug: "discovery-call-summary-ai-tool",
+    category: "tools",
+    topic: "discovery-call",
+    batch: 3,
+    featured: true,
+    keyword: "discovery call summary ai tool",
+    title: "Discovery Call Summary AI Tool | Capture Buyer Context Faster",
+    description:
+      "Use an AI tool to generate discovery call summaries with buyer goals, pain points, objections, stakeholders, and next steps.",
+    heroTitle: "An AI tool for discovery call summaries that sales teams can actually reuse",
+    heroDescription:
+      "Summarize discovery calls into a reusable draft for CRM updates, handoffs, recap emails, and next-step planning.",
+    intro:
+      "This page goes after software-intent discovery summary queries. It reinforces the product positioning as more than a generic transcript summarizer by tying summaries directly to downstream sales work.",
+    benefits: [
+      "Create faster post-call summaries for internal teams.",
+      "Preserve high-signal buyer context before it fades.",
+      "Support recap, CRM, and follow-up workflows from one transcript.",
+    ],
+    audiences: ["AEs", "Sales managers", "Founders running customer discovery"],
+    faqs: [
+      {
+        question: "What should a discovery summary AI tool extract?",
+        answer:
+          "It should capture current process, goals, pain points, objections, stakeholders, buying timeline, and the agreed next step.",
+      },
+      {
+        question: "Is this only for early-stage discovery calls?",
+        answer:
+          "No. It also works well for qualification calls, solution reviews, and any buyer conversation where context needs to be reused quickly.",
+      },
+    ],
+    relatedSlugs: ["discovery-call-summary-generator", "discovery-call-template-format", "discovery-call-best-practices-for-notes", "how-to-summarize-a-discovery-call"],
+  },
+  {
+    slug: "objection-handling-ai-tool",
+    category: "tools",
+    topic: "objections",
+    batch: 3,
+    keyword: "objection handling ai tool",
+    title: "Objection Handling AI Tool | Organize Buyer Pushback After Calls",
+    description:
+      "Use an objection handling AI tool to extract buyer pushback, identify likely root concerns, and plan stronger follow-up responses.",
+    heroTitle: "An AI tool for objection handling that starts with real call evidence",
+    heroDescription:
+      "Turn raw transcript moments into structured objection notes your team can use for coaching, messaging, and deal strategy.",
+    intro:
+      "Buyers rarely state objections in a neat format. This page targets visitors who want software help identifying and structuring objection data from sales conversations rather than relying on memory.",
+    benefits: [
+      "Turn vague pushback into a structured objection log.",
+      "Help reps prep stronger follow-up responses.",
+      "Create a reusable signal source for sales coaching and messaging updates.",
+    ],
+    audiences: ["Sales managers", "Enablement leads", "Founders refining pitch and positioning"],
+    faqs: [
+      {
+        question: "Can AI understand hidden objections?",
+        answer:
+          "It can often surface likely concerns and hesitation patterns from the transcript, but teams should still review important strategic calls manually.",
+      },
+      {
+        question: "Does objection handling start after the call?",
+        answer:
+          "The response begins during the call, but clean objection documentation after the call makes next-step messaging much stronger.",
+      },
+    ],
+    relatedSlugs: ["sales-objection-tracker-ai", "objection-response-template", "how-to-handle-sales-objections-after-a-call", "objection-handling-template"],
+  },
+  {
+    slug: "sales-call-recap-software",
+    category: "tools",
+    topic: "recap",
+    batch: 3,
+    keyword: "sales call recap software",
+    title: "Sales Call Recap Software | Faster Recaps for Teams and Buyers",
+    description:
+      "Use sales call recap software to turn transcripts into concise recaps with key takeaways, blockers, and next steps.",
+    heroTitle: "Sales call recap software for teams that want cleaner communication after every meeting",
+    heroDescription:
+      "Generate a recap draft from your transcript so follow-up happens faster and internal alignment stays tight.",
+    intro:
+      "This software-intent page sits between recap education and product evaluation. It helps capture searchers who are ready to compare tools for recap generation, especially when manual post-call writing is slowing the team down.",
+    benefits: [
+      "Shorten the gap between call end and recap delivery.",
+      "Make buyer and team alignment easier to maintain.",
+      "Create reusable recap structure without extra manual admin.",
+    ],
+    audiences: ["Sales teams sending frequent recaps", "Founders handling complex deals", "Customer-facing operators"],
+    faqs: [
+      {
+        question: "What makes recap software useful?",
+        answer:
+          "Useful recap software makes the output concise, specific, and easy to reuse in follow-up emails, shared docs, and CRM notes.",
+      },
+      {
+        question: "Should recap software replace human review?",
+        answer:
+          "No. It should remove most of the blank-page work, then leave a short review step before sharing the recap externally.",
+      },
+    ],
+    relatedSlugs: ["sales-call-recap-generator", "sales-recap-template-example", "sales-call-recap-best-practices", "sales-call-recap-template"],
+  },
+  {
+    slug: "call-summary-generator-ai",
+    category: "tools",
+    topic: "summary",
+    batch: 3,
+    keyword: "call summary generator ai",
+    title: "Call Summary Generator AI | Turn Sales Calls Into Actionable Summaries",
+    description:
+      "Generate action-ready call summaries with AI, including main takeaways, objections, next steps, and follow-up context.",
+    heroTitle: "A call summary generator AI for teams that need more than generic notes",
+    heroDescription:
+      "Use AI to turn raw conversations into concise summaries that feed CRM updates, follow-up messages, and internal handoffs.",
+    intro:
+      "Generic call-summary searches often still carry strong commercial intent. This page captures that search behavior while reinforcing the product's core differentiation: summaries that connect directly to follow-up execution.",
+    benefits: [
+      "Create summaries faster from messy transcripts.",
+      "Keep the most important takeaways visible for the team.",
+      "Bridge summary intent into recap, CRM, and follow-up workflows.",
+    ],
+    audiences: ["AEs", "Sales leaders", "Founders juggling many buyer calls"],
+    faqs: [
+      {
+        question: "What should an AI call summary include?",
+        answer:
+          "At minimum, it should include the main context, buyer priorities, concerns, open questions, and the next agreed action.",
+      },
+      {
+        question: "Can a call summary generator support internal handoffs?",
+        answer:
+          "Yes. A structured summary is one of the fastest ways to help another teammate understand the conversation without reading the full transcript.",
+      },
+    ],
+    relatedSlugs: ["sales-call-summary-tool", "call-summary-format", "how-to-write-a-call-summary-after-a-sales-call", "sales-call-summary-best-practices"],
   },
   {
     slug: "sales-follow-up-email-template",
     category: "templates",
     topic: "follow-up",
+    batch: 1,
     featured: true,
     keyword: "sales follow up email template",
     title: "Sales Follow Up Email Template | Simple Post-Call Structure",
@@ -359,12 +577,13 @@ export const seoPages: SeoPage[] = [
           "Usually short to medium length works best: clear recap, buyer priorities, and next steps without writing a novel.",
       },
     ],
-    relatedSlugs: ["sales-follow-up-email-generator", "how-to-write-a-sales-follow-up-email", "discovery-call-notes-template"],
+    relatedSlugs: ["sales-follow-up-email-generator", "how-to-write-a-sales-follow-up-email", "discovery-call-notes-template", "follow-up-email-format", "follow-up-email-tips-after-sales-call"],
   },
   {
     slug: "discovery-call-notes-template",
     category: "templates",
     topic: "discovery-call",
+    batch: 1,
     featured: true,
     keyword: "discovery call notes template",
     title: "Discovery Call Notes Template | Capture the Right Sales Details",
@@ -393,12 +612,13 @@ export const seoPages: SeoPage[] = [
           "Yes. When reps use the same structure, managers can more easily compare calls and spot missing information.",
       },
     ],
-    relatedSlugs: ["crm-notes-template", "discovery-call-summary-generator", "how-to-summarize-a-discovery-call"],
+    relatedSlugs: ["crm-notes-template", "discovery-call-summary-generator", "how-to-summarize-a-discovery-call", "discovery-call-template-format", "discovery-call-best-practices-for-notes"],
   },
   {
     slug: "crm-notes-template",
     category: "templates",
     topic: "crm-notes",
+    batch: 1,
     featured: true,
     keyword: "crm notes template",
     title: "CRM Notes Template | Standardize Post-Call Updates",
@@ -427,12 +647,13 @@ export const seoPages: SeoPage[] = [
           "Not usually. Clear structure beats long paragraphs because teams need to scan updates quickly.",
       },
     ],
-    relatedSlugs: ["crm-note-generator", "how-to-write-crm-notes-after-a-sales-call", "sales-call-summary-tool"],
+    relatedSlugs: ["crm-note-generator", "how-to-write-crm-notes-after-a-sales-call", "sales-call-summary-tool", "crm-notes-example", "how-to-write-crm-notes-for-sales-calls"],
   },
   {
     slug: "sales-call-recap-template",
     category: "templates",
     topic: "recap",
+    batch: 2,
     featured: true,
     keyword: "sales call recap template",
     title: "Sales Call Recap Template | A Clear Format for Post-Call Recaps",
@@ -461,12 +682,13 @@ export const seoPages: SeoPage[] = [
           "Yes, especially when those objections affect follow-up strategy or next-meeting prep.",
       },
     ],
-    relatedSlugs: ["sales-call-recap-generator", "how-to-write-a-sales-call-recap", "sales-call-summary-tool"],
+    relatedSlugs: ["sales-call-recap-generator", "how-to-write-a-sales-call-recap", "sales-call-summary-tool", "sales-recap-template-example", "sales-call-recap-best-practices"],
   },
   {
     slug: "objection-handling-template",
     category: "templates",
     topic: "objections",
+    batch: 2,
     keyword: "objection handling template",
     title: "Objection Handling Template | Capture Buyer Pushback After Sales Calls",
     description:
@@ -494,12 +716,13 @@ export const seoPages: SeoPage[] = [
           "Yes. Discovery calls are often where the most valuable objections first appear.",
       },
     ],
-    relatedSlugs: ["sales-objection-tracker-ai", "how-to-document-sales-objections-after-a-call", "discovery-call-summary-generator"],
+    relatedSlugs: ["sales-objection-tracker-ai", "how-to-document-sales-objections-after-a-call", "discovery-call-summary-generator", "objection-response-template", "how-to-handle-sales-objections-after-a-call"],
   },
   {
     slug: "crm-note-format",
     category: "templates",
     topic: "crm-notes",
+    batch: 2,
     keyword: "crm note format",
     title: "CRM Note Format | A Simple Structure for Better Sales Updates",
     description:
@@ -527,12 +750,13 @@ export const seoPages: SeoPage[] = [
           "Usually yes. Bullets and clear sections make notes much easier to scan than one long paragraph.",
       },
     ],
-    relatedSlugs: ["crm-notes-template", "crm-note-generator", "how-to-write-crm-notes-after-a-sales-call"],
+    relatedSlugs: ["crm-notes-template", "crm-note-generator", "how-to-write-crm-notes-after-a-sales-call", "crm-notes-example", "how-to-write-crm-notes-for-sales-calls"],
   },
   {
     slug: "discovery-call-summary-example",
     category: "templates",
     topic: "summary",
+    batch: 2,
     keyword: "discovery call summary example",
     title: "Discovery Call Summary Example | What a Good Post-Call Summary Looks Like",
     description:
@@ -560,12 +784,220 @@ export const seoPages: SeoPage[] = [
           "Yes. A strong summary should always make the next action and buyer context easy to understand.",
       },
     ],
-    relatedSlugs: ["how-to-summarize-a-discovery-call", "discovery-call-notes-template", "discovery-call-summary-generator"],
+    relatedSlugs: ["how-to-summarize-a-discovery-call", "discovery-call-notes-template", "discovery-call-summary-generator", "call-summary-format", "how-to-write-a-call-summary-after-a-sales-call"],
+  },
+  {
+    slug: "follow-up-email-format",
+    category: "templates",
+    topic: "follow-up",
+    batch: 3,
+    featured: true,
+    keyword: "follow up email format",
+    title: "Follow Up Email Format | A Clear Structure for Sales Follow-Up",
+    description:
+      "Use a simple follow up email format after sales calls to recap buyer priorities, confirm next steps, and keep the conversation moving.",
+    heroTitle: "A follow-up email format that keeps post-call writing clean and easy",
+    heroDescription:
+      "Start with a simple structure for recap, action items, and the next step instead of drafting every follow-up from scratch.",
+    intro:
+      "Some searchers want the structure before they want automation. This page targets format-intent searches and acts as a strong bridge into both the template cluster and the product workflow.",
+    benefits: [
+      "Give reps a reliable follow-up shape to reuse.",
+      "Make buyer priorities and next actions easier to surface.",
+      "Create a strong entry page into follow-up tools and guides.",
+    ],
+    audiences: ["SDRs", "AEs", "Founders writing their own follow-up emails"],
+    faqs: [
+      {
+        question: "What sections should a follow-up email format include?",
+        answer:
+          "A short thank-you, the core recap, the buyer's priorities or blockers, and a clear next step are usually enough.",
+      },
+      {
+        question: "Should follow-up email format change by call type?",
+        answer:
+          "Yes. Discovery, demo, and pricing calls often need slightly different emphasis, but the structure can stay largely the same.",
+      },
+    ],
+    relatedSlugs: ["sales-follow-up-email-template", "sales-follow-up-email-generator", "follow-up-email-tips-after-sales-call", "follow-up-meeting-recap-ai"],
+  },
+  {
+    slug: "crm-notes-example",
+    category: "templates",
+    topic: "crm-notes",
+    batch: 3,
+    featured: true,
+    keyword: "crm notes example",
+    title: "CRM Notes Example | What Good Sales Call Notes Look Like",
+    description:
+      "Review a CRM notes example to see how buyer context, pain points, objections, and next steps can be logged clearly after a sales call.",
+    heroTitle: "A CRM notes example that shows the right level of detail",
+    heroDescription:
+      "Use a concrete example to understand what clean, useful post-call CRM notes should actually capture.",
+    intro:
+      "Example-intent keywords are useful because they help visitors self-educate quickly, then move naturally into templates or generators. This page strengthens the CRM-notes cluster with a strong mid-funnel entry point.",
+    benefits: [
+      "Show teams what good CRM note quality looks like.",
+      "Create a benchmark for both manual notes and AI-generated drafts.",
+      "Bridge readers into templates, formats, and tools.",
+    ],
+    audiences: ["New reps", "Founders building basic sales process", "Managers improving note quality"],
+    faqs: [
+      {
+        question: "What makes a CRM notes example useful?",
+        answer:
+          "It should show enough specificity that a reader can understand the buyer situation, objection areas, and next step without seeing the full transcript.",
+      },
+      {
+        question: "Should CRM note examples be short or detailed?",
+        answer:
+          "Usually concise but specific works best. The note should stay scannable while still preserving the decision-relevant details.",
+      },
+    ],
+    relatedSlugs: ["crm-notes-template", "crm-notes-ai-generator", "how-to-write-crm-notes-for-sales-calls", "crm-note-format"],
+  },
+  {
+    slug: "discovery-call-template-format",
+    category: "templates",
+    topic: "discovery-call",
+    batch: 3,
+    featured: true,
+    keyword: "discovery call template format",
+    title: "Discovery Call Template Format | Structure Notes and Summaries Better",
+    description:
+      "Use a discovery call template format to capture buyer situation, pain points, stakeholders, objections, and next steps consistently.",
+    heroTitle: "A discovery call template format that keeps post-call notes organized",
+    heroDescription:
+      "Use a simple structure to capture the details from discovery calls that matter for qualification, follow-up, and internal review.",
+    intro:
+      "This page covers format-intent discovery searches and gives the cluster a stronger bridge between educational content and AI-tool content. It is useful for people trying to standardize discovery workflows before scaling them.",
+    benefits: [
+      "Standardize discovery call capture across the team.",
+      "Make follow-up and handoff faster after every call.",
+      "Create a better structure for AI-assisted summaries and notes.",
+    ],
+    audiences: ["AEs", "Sales managers", "Founders doing customer discovery"],
+    faqs: [
+      {
+        question: "What should a discovery call template format include?",
+        answer:
+          "Include the current process, goals, pain points, stakeholders, objections, timeline, and the next agreed step.",
+      },
+      {
+        question: "Is format different from a template?",
+        answer:
+          "They overlap, but format-focused searches usually want the shape and sections first, while a template may provide more direct fill-in wording.",
+      },
+    ],
+    relatedSlugs: ["discovery-call-notes-template", "discovery-call-summary-ai-tool", "discovery-call-best-practices-for-notes", "how-to-summarize-a-discovery-call"],
+  },
+  {
+    slug: "objection-response-template",
+    category: "templates",
+    topic: "objections",
+    batch: 3,
+    keyword: "objection response template",
+    title: "Objection Response Template | Structure Better Follow-Up to Buyer Pushback",
+    description:
+      "Use an objection response template to capture the buyer concern, likely root issue, response angle, and next follow-up action.",
+    heroTitle: "An objection response template that helps teams turn pushback into cleaner follow-up",
+    heroDescription:
+      "Use a simple structure to document the objection, frame your response, and prepare the next conversation with more confidence.",
+    intro:
+      "Not every objection should be handled off the cuff. This page targets visitors who want a repeatable way to respond after the call and feeds naturally into objection-documentation and AI-tool pages.",
+    benefits: [
+      "Standardize how reps document and respond to objections.",
+      "Help teams separate surface pushback from root concern.",
+      "Improve follow-up prep for the next conversation.",
+    ],
+    audiences: ["AEs", "Sales enablement teams", "Founders refining objection handling"],
+    faqs: [
+      {
+        question: "What should an objection response template include?",
+        answer:
+          "The buyer concern, likely underlying issue, your response angle, proof or context to send, and the next follow-up step are the most useful parts.",
+      },
+      {
+        question: "Is this the same as a call script?",
+        answer:
+          "No. This is more useful after the call, when the team is documenting the objection and planning how to respond next.",
+      },
+    ],
+    relatedSlugs: ["objection-handling-template", "objection-handling-ai-tool", "how-to-handle-sales-objections-after-a-call", "sales-objection-tracker-ai"],
+  },
+  {
+    slug: "sales-recap-template-example",
+    category: "templates",
+    topic: "recap",
+    batch: 3,
+    keyword: "sales recap template example",
+    title: "Sales Recap Template Example | Model a Better Post-Call Recap",
+    description:
+      "Review a sales recap template example to see how key takeaways, blockers, and next steps can be organized after a sales call.",
+    heroTitle: "A sales recap template example that shows what a useful recap really looks like",
+    heroDescription:
+      "Use a real-world recap example to benchmark your own post-call communication and tighten the way your team summarizes conversations.",
+    intro:
+      "Example-driven recap searches are a nice mid-funnel SEO entry point. This page helps visitors see what good looks like, then moves them into templates, best-practice guides, and recap software pages.",
+    benefits: [
+      "Show the level of detail a recap should include.",
+      "Help teams improve recap clarity and consistency.",
+      "Bridge recap education into recap tools and templates.",
+    ],
+    audiences: ["Reps sending recaps", "Founders closing early deals", "Managers reviewing communication quality"],
+    faqs: [
+      {
+        question: "Why use an example for sales recaps?",
+        answer:
+          "Examples make the quality standard obvious. They show how short, specific, and action-oriented a recap should be.",
+      },
+      {
+        question: "Should recap examples include next steps and blockers?",
+        answer:
+          "Yes. Those are often the highest-signal parts of the recap because they determine what happens after the call.",
+      },
+    ],
+    relatedSlugs: ["sales-call-recap-template", "sales-call-recap-software", "sales-call-recap-best-practices", "sales-call-recap-generator"],
+  },
+  {
+    slug: "call-summary-format",
+    category: "templates",
+    topic: "summary",
+    batch: 3,
+    keyword: "call summary format",
+    title: "Call Summary Format | A Better Structure for Sales Call Summaries",
+    description:
+      "Use a call summary format to organize takeaways, buyer priorities, objections, and next steps into a concise post-call summary.",
+    heroTitle: "A call summary format that makes summaries easier to read and reuse",
+    heroDescription:
+      "Use a structured summary format so teams can move from transcript to action without getting lost in long notes.",
+    intro:
+      "Format-intent summary searches are useful because they sit between education and tooling. This page gives the summary cluster another strong internal-linking node and supports broader call-summary keyword coverage.",
+    benefits: [
+      "Give summaries a repeatable shape that scales across the team.",
+      "Make post-call notes more readable during reviews and handoffs.",
+      "Create better input structure for AI-generated summaries too.",
+    ],
+    audiences: ["AEs", "Sales leaders", "Operators managing high call volume"],
+    faqs: [
+      {
+        question: "What is the best format for a sales call summary?",
+        answer:
+          "Usually a short context section, key takeaways, buyer needs or objections, and a clear next-step section works best.",
+      },
+      {
+        question: "Should call summary format vary by team?",
+        answer:
+          "Yes, but the core structure should stay consistent enough that anyone on the team can scan and understand the note quickly.",
+      },
+    ],
+    relatedSlugs: ["sales-call-summary-tool", "call-summary-generator-ai", "how-to-write-a-call-summary-after-a-sales-call", "discovery-call-summary-example"],
   },
   {
     slug: "how-to-write-a-sales-follow-up-email",
     category: "guides",
     topic: "follow-up",
+    batch: 1,
     featured: true,
     keyword: "how to write a sales follow up email",
     title: "How to Write a Sales Follow Up Email After a Call",
@@ -594,12 +1026,13 @@ export const seoPages: SeoPage[] = [
           "No. Focus on the buyer's priorities, what you discussed, and the next step. Keep it useful, not exhaustive.",
       },
     ],
-    relatedSlugs: ["sales-follow-up-email-template", "sales-follow-up-email-generator", "sales-call-summary-tool"],
+    relatedSlugs: ["sales-follow-up-email-template", "sales-follow-up-email-generator", "sales-call-summary-tool", "follow-up-email-format", "follow-up-email-tips-after-sales-call"],
   },
   {
     slug: "how-to-summarize-a-discovery-call",
     category: "guides",
     topic: "discovery-call",
+    batch: 1,
     featured: true,
     keyword: "how to summarize a discovery call",
     title: "How to Summarize a Discovery Call for Faster Follow-Up",
@@ -628,12 +1061,13 @@ export const seoPages: SeoPage[] = [
           "Yes, especially when you want a first draft that can be reviewed and pasted into a sales workflow quickly.",
       },
     ],
-    relatedSlugs: ["discovery-call-summary-generator", "discovery-call-notes-template", "sales-call-summary-tool"],
+    relatedSlugs: ["discovery-call-summary-generator", "discovery-call-notes-template", "sales-call-summary-tool", "discovery-call-template-format", "discovery-call-best-practices-for-notes"],
   },
   {
     slug: "how-to-write-crm-notes-after-a-sales-call",
     category: "guides",
     topic: "crm-notes",
+    batch: 1,
     featured: true,
     keyword: "how to write crm notes after a sales call",
     title: "How to Write CRM Notes After a Sales Call",
@@ -662,12 +1096,13 @@ export const seoPages: SeoPage[] = [
           "Not always, but key phrases and specific objections can be very useful when they affect messaging or deal strategy.",
       },
     ],
-    relatedSlugs: ["crm-note-generator", "crm-notes-template", "how-to-summarize-a-discovery-call"],
+    relatedSlugs: ["crm-note-generator", "crm-notes-template", "how-to-summarize-a-discovery-call", "crm-notes-example", "how-to-write-crm-notes-for-sales-calls"],
   },
   {
     slug: "how-to-write-a-sales-call-recap",
     category: "guides",
     topic: "recap",
+    batch: 2,
     featured: true,
     keyword: "how to write a sales call recap",
     title: "How to Write a Sales Call Recap That Drives Next Steps",
@@ -696,12 +1131,13 @@ export const seoPages: SeoPage[] = [
           "Long enough to capture the real signal, short enough that the reader can understand it in under a minute.",
       },
     ],
-    relatedSlugs: ["sales-call-recap-template", "sales-call-recap-generator", "sales-follow-up-email-generator"],
+    relatedSlugs: ["sales-call-recap-template", "sales-call-recap-generator", "sales-follow-up-email-generator", "sales-recap-template-example", "sales-call-recap-best-practices"],
   },
   {
     slug: "how-to-document-sales-objections-after-a-call",
     category: "guides",
     topic: "objections",
+    batch: 2,
     keyword: "how to document sales objections after a call",
     title: "How to Document Sales Objections After a Call",
     description:
@@ -729,12 +1165,13 @@ export const seoPages: SeoPage[] = [
           "They can live in both, but having a clearly marked objection section makes them much easier to analyze across calls.",
       },
     ],
-    relatedSlugs: ["sales-objection-tracker-ai", "objection-handling-template", "crm-note-generator"],
+    relatedSlugs: ["sales-objection-tracker-ai", "objection-handling-template", "crm-note-generator", "objection-response-template", "how-to-handle-sales-objections-after-a-call"],
   },
   {
     slug: "sales-call-summary-best-practices",
     category: "guides",
     topic: "summary",
+    batch: 2,
     keyword: "sales call summary best practices",
     title: "Sales Call Summary Best Practices | How to Create Better Post-Call Summaries",
     description:
@@ -762,12 +1199,13 @@ export const seoPages: SeoPage[] = [
           "Yes. Standardization makes summaries easier to review, compare, and reuse across the team.",
       },
     ],
-    relatedSlugs: ["sales-call-summary-tool", "discovery-call-summary-generator", "discovery-call-summary-example"],
+    relatedSlugs: ["sales-call-summary-tool", "discovery-call-summary-generator", "discovery-call-summary-example", "call-summary-format", "how-to-write-a-call-summary-after-a-sales-call"],
   },
   {
     slug: "follow-up-email-best-practices",
     category: "guides",
     topic: "follow-up",
+    batch: 2,
     keyword: "follow up email best practices after sales call",
     title: "Follow Up Email Best Practices After a Sales Call",
     description:
@@ -795,7 +1233,214 @@ export const seoPages: SeoPage[] = [
           "Only if they are directly relevant. Too many links or documents can dilute the main next step.",
       },
     ],
-    relatedSlugs: ["how-to-write-a-sales-follow-up-email", "sales-follow-up-email-template", "follow-up-email-ai-tool"],
+    relatedSlugs: ["how-to-write-a-sales-follow-up-email", "sales-follow-up-email-template", "follow-up-email-ai-tool", "follow-up-email-format", "follow-up-meeting-recap-ai"],
+  },
+  {
+    slug: "follow-up-email-tips-after-sales-call",
+    category: "guides",
+    topic: "follow-up",
+    batch: 3,
+    featured: true,
+    keyword: "follow up email tips after sales call",
+    title: "Follow Up Email Tips After Sales Call | Write Cleaner Post-Call Emails",
+    description:
+      "Learn follow up email tips after a sales call so your recap is clearer, more specific, and easier for buyers to act on.",
+    heroTitle: "Follow-up email tips for teams that want faster, sharper post-call emails",
+    heroDescription:
+      "Use practical tips to tighten your recap, clarify next steps, and make every sales follow-up more useful.",
+    intro:
+      "Tips-intent queries are lightweight, practical, and often high-volume. This page strengthens the follow-up cluster with a clear educational entry point that naturally routes readers into templates and AI tools.",
+    benefits: [
+      "Improve follow-up quality without increasing writing time.",
+      "Make buyer priorities and commitments more obvious.",
+      "Bridge quick advice searches into templates, formats, and generators.",
+    ],
+    audiences: ["SDRs", "AEs", "Founders sending post-call emails"],
+    faqs: [
+      {
+        question: "What is the biggest mistake in follow-up emails?",
+        answer:
+          "The biggest mistake is sending vague generic copy that does not reflect what the buyer actually cared about on the call.",
+      },
+      {
+        question: "How many tips should a rep actually remember?",
+        answer:
+          "A few high-value habits matter most: send fast, stay specific, confirm next steps clearly, and avoid unnecessary fluff.",
+      },
+    ],
+    relatedSlugs: ["how-to-write-a-sales-follow-up-email", "follow-up-email-format", "follow-up-meeting-recap-ai", "sales-follow-up-email-template"],
+  },
+  {
+    slug: "how-to-write-crm-notes-for-sales-calls",
+    category: "guides",
+    topic: "crm-notes",
+    batch: 3,
+    featured: true,
+    keyword: "how to write crm notes for sales calls",
+    title: "How to Write CRM Notes for Sales Calls | Keep Context Clear and Usable",
+    description:
+      "Learn how to write CRM notes for sales calls so your updates stay concise, specific, and useful during reviews and follow-up.",
+    heroTitle: "How to write CRM notes for sales calls without creating messy updates",
+    heroDescription:
+      "Use a clean framework to log the details from sales conversations that matter most for pipeline visibility and next-step execution.",
+    intro:
+      "This guide expands the CRM-notes cluster with a closely related how-to keyword variation that still carries distinct search demand. It links cleanly into examples, templates, formats, and AI-generator pages.",
+    benefits: [
+      "Improve CRM-note quality across the team.",
+      "Make pipeline reviews faster and less ambiguous.",
+      "Create stronger bridges into note templates and AI generators.",
+    ],
+    audiences: ["AEs", "Sales managers", "Founders updating CRM manually"],
+    faqs: [
+      {
+        question: "What should sales-call CRM notes emphasize most?",
+        answer:
+          "They should emphasize buyer goals, current workflow, key pain points, objections, stakeholders, timing, and the next agreed action.",
+      },
+      {
+        question: "Should CRM notes be written immediately after the call?",
+        answer:
+          "Yes, whenever possible. Writing them while the conversation is fresh usually improves both accuracy and specificity.",
+      },
+    ],
+    relatedSlugs: ["how-to-write-crm-notes-after-a-sales-call", "crm-notes-example", "crm-notes-ai-generator", "crm-note-format"],
+  },
+  {
+    slug: "discovery-call-best-practices-for-notes",
+    category: "guides",
+    topic: "discovery-call",
+    batch: 3,
+    featured: true,
+    keyword: "discovery call best practices for notes",
+    title: "Discovery Call Best Practices for Notes | Capture Better Buyer Signal",
+    description:
+      "Learn discovery call best practices for notes so your team captures buyer pains, objections, stakeholders, and next steps more consistently.",
+    heroTitle: "Discovery call note best practices for teams that want cleaner post-call detail",
+    heroDescription:
+      "Use practical note-taking and summarization best practices to keep discovery insights useful after the meeting ends.",
+    intro:
+      "Best-practices pages are useful because they are educational without being too broad. This keyword expands discovery coverage while reinforcing the pathway into structured templates and summary tools.",
+    benefits: [
+      "Improve note quality across reps and managers.",
+      "Capture more useful buyer signal from discovery calls.",
+      "Support cleaner transitions into CRM, recap, and summary workflows.",
+    ],
+    audiences: ["AEs", "Sales leaders", "Founders doing customer discovery"],
+    faqs: [
+      {
+        question: "What is the biggest note-taking mistake in discovery calls?",
+        answer:
+          "The biggest mistake is capturing generic conversation flow while missing the buyer's real pains, constraints, and next-step commitments.",
+      },
+      {
+        question: "Should note best practices change with deal stage?",
+        answer:
+          "Yes, but early calls almost always need strong capture of pain points, current process, stakeholders, and qualification signal.",
+      },
+    ],
+    relatedSlugs: ["how-to-summarize-a-discovery-call", "discovery-call-template-format", "discovery-call-summary-ai-tool", "discovery-call-notes-template"],
+  },
+  {
+    slug: "how-to-handle-sales-objections-after-a-call",
+    category: "guides",
+    topic: "objections",
+    batch: 3,
+    keyword: "how to handle sales objections after a call",
+    title: "How to Handle Sales Objections After a Call | Turn Pushback Into Better Follow-Up",
+    description:
+      "Learn how to handle sales objections after a call so your team can respond with better context, cleaner messaging, and stronger next steps.",
+    heroTitle: "How to handle sales objections after a call without relying on memory alone",
+    heroDescription:
+      "Use a structured follow-up workflow to review objections, identify the real concern, and prepare a stronger next conversation.",
+    intro:
+      "Objection handling does not end when the call ends. This guide expands the objections cluster with a practical how-to page that links naturally into templates, trackers, and AI-driven objection tools.",
+    benefits: [
+      "Help reps respond more thoughtfully after buyer pushback.",
+      "Preserve context behind objections before it gets lost.",
+      "Improve linkage between objection logging and follow-up strategy.",
+    ],
+    audiences: ["AEs", "Sales managers", "Founders refining messaging"],
+    faqs: [
+      {
+        question: "What should happen right after an objection-heavy call?",
+        answer:
+          "The team should document the exact objection, note the likely root concern, decide what proof or clarification to send, and define the next follow-up step.",
+      },
+      {
+        question: "Can objection handling after the call improve win rate?",
+        answer:
+          "Yes. Better post-call handling can tighten messaging, prevent weak follow-up, and help the team address the real blocker rather than the surface wording.",
+      },
+    ],
+    relatedSlugs: ["how-to-document-sales-objections-after-a-call", "objection-response-template", "objection-handling-ai-tool", "sales-objection-tracker-ai"],
+  },
+  {
+    slug: "sales-call-recap-best-practices",
+    category: "guides",
+    topic: "recap",
+    batch: 3,
+    keyword: "sales call recap best practices",
+    title: "Sales Call Recap Best Practices | Write Better Post-Call Recaps",
+    description:
+      "Learn sales call recap best practices so your recaps stay specific, concise, and useful for buyers and internal teams.",
+    heroTitle: "Sales call recap best practices for teams that want clear next-step communication",
+    heroDescription:
+      "Use practical recap habits to make post-call communication tighter, more specific, and easier to act on.",
+    intro:
+      "Recap quality can quietly influence deal momentum. This best-practices page expands recap coverage and acts as a clean bridge into recap templates, examples, and software-intent pages.",
+    benefits: [
+      "Improve clarity of buyer-facing and internal recaps.",
+      "Reduce bloated post-call writing.",
+      "Strengthen linkage between recap content and next-step execution.",
+    ],
+    audiences: ["AEs", "Founders", "Teams sharing recap emails internally and externally"],
+    faqs: [
+      {
+        question: "What makes a sales recap strong?",
+        answer:
+          "A strong recap is specific, short, and action-oriented. It highlights the buyer context, important blockers, and the next step clearly.",
+      },
+      {
+        question: "Should recap best practices differ for internal versus external readers?",
+        answer:
+          "Yes. Internal recaps can include more deal detail, while buyer-facing recaps should stay concise and focused on shared understanding and next actions.",
+      },
+    ],
+    relatedSlugs: ["how-to-write-a-sales-call-recap", "sales-recap-template-example", "sales-call-recap-software", "sales-call-recap-template"],
+  },
+  {
+    slug: "how-to-write-a-call-summary-after-a-sales-call",
+    category: "guides",
+    topic: "summary",
+    batch: 3,
+    keyword: "how to write a call summary after a sales call",
+    title: "How to Write a Call Summary After a Sales Call | Make Notes Action-Ready",
+    description:
+      "Learn how to write a call summary after a sales call so the key takeaways, objections, and next steps are easy to reuse.",
+    heroTitle: "How to write a call summary after a sales call without producing generic notes",
+    heroDescription:
+      "Use a simple structure to turn a conversation into a concise summary that helps with CRM updates, follow-up, and internal handoff.",
+    intro:
+      "This page broadens the summary cluster with a more conversational how-to keyword. It works well as a practical educational page that can route readers into summary formats, examples, and AI tools.",
+    benefits: [
+      "Teach teams how to create more useful summaries fast.",
+      "Reduce weak generic summaries that hide the real signal.",
+      "Create a natural bridge into summary tools, formats, and examples.",
+    ],
+    audiences: ["AEs", "Sales managers", "Founders juggling many customer calls"],
+    faqs: [
+      {
+        question: "What should a post-sales-call summary include?",
+        answer:
+          "It should include the core context, buyer goals, objections or blockers, open questions, and the next agreed action.",
+      },
+      {
+        question: "How detailed should the summary be?",
+        answer:
+          "Specific enough to be useful later, but still short enough that another teammate can understand it quickly without reading the transcript.",
+      },
+    ],
+    relatedSlugs: ["sales-call-summary-best-practices", "call-summary-format", "call-summary-generator-ai", "discovery-call-summary-example"],
   },
 ];
 
@@ -833,18 +1478,50 @@ export function getFeaturedPages() {
   return seoPages.filter((page) => page.featured);
 }
 
+export function getFeaturedPagesByCategory(category: SeoPageCategory, limit = 3) {
+  return getFeaturedPages().filter((page) => page.category === category).slice(0, limit);
+}
+
 export function getPagesByTopic(topic: SeoTopic) {
   return seoPages.filter((page) => page.topic === topic);
 }
 
+export function getBatchPages(batch: 1 | 2 | 3) {
+  return seoPages.filter((page) => page.batch === batch);
+}
+
+export function getBatchPagesByCategory(category: SeoPageCategory, batch: 1 | 2 | 3, limit?: number) {
+  const pages = seoPages.filter((page) => page.category === category && page.batch === batch);
+  return typeof limit === "number" ? pages.slice(0, limit) : pages;
+}
+
+export function getTopicJourney(page: SeoPage, limit = 3) {
+  const categoryOrder: SeoPageCategory[] = ["tools", "templates", "guides"];
+  return categoryOrder
+    .filter((category) => category !== page.category)
+    .map((category) =>
+      seoPages.find((candidate) => candidate.slug !== page.slug && candidate.topic === page.topic && candidate.category === category),
+    )
+    .filter((candidate): candidate is SeoPage => Boolean(candidate))
+    .slice(0, limit);
+}
+
 export function getRelatedPages(page: SeoPage, limit = 6) {
   const explicit = page.relatedSlugs.map((slug) => seoPageMap[slug]).filter(Boolean);
-  const sameTopic = seoPages.filter((candidate) => candidate.slug !== page.slug && candidate.topic === page.topic);
+  const sameTopicCrossCategory = seoPages.filter(
+    (candidate) => candidate.slug !== page.slug && candidate.topic === page.topic && candidate.category !== page.category,
+  );
+  const sameTopicSameCategory = seoPages.filter(
+    (candidate) => candidate.slug !== page.slug && candidate.topic === page.topic && candidate.category === page.category,
+  );
+  const sameBatch = seoPages.filter(
+    (candidate) => candidate.slug !== page.slug && candidate.batch === page.batch && candidate.topic !== page.topic,
+  );
   const sameCategory = seoPages.filter(
     (candidate) => candidate.slug !== page.slug && candidate.category === page.category && candidate.topic !== page.topic,
   );
 
-  const merged = [...explicit, ...sameTopic, ...sameCategory];
+  const merged = [...explicit, ...sameTopicCrossCategory, ...sameTopicSameCategory, ...sameBatch, ...sameCategory];
   const unique = merged.filter((candidate, index) => merged.findIndex((item) => item.slug === candidate.slug) === index);
 
   return unique.slice(0, limit);

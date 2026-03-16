@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { categoryMeta, getPagesByTopic, getRelatedPages, type SeoPage, type SeoPageCategory } from "@/lib/seo-pages";
+import {
+  categoryMeta,
+  getPagesByTopic,
+  getRelatedPages,
+  getTopicJourney,
+  type SeoPage,
+  type SeoPageCategory,
+} from "@/lib/seo-pages";
 
 function prettifyCategory(category: SeoPageCategory) {
   if (category === "tools") return "Tool";
@@ -10,6 +17,7 @@ function prettifyCategory(category: SeoPageCategory) {
 export function SeoPageShell({ page }: { page: SeoPage }) {
   const relatedPages = getRelatedPages(page, 6);
   const topicPages = getPagesByTopic(page.topic).filter((item) => item.slug !== page.slug).slice(0, 3);
+  const topicJourney = getTopicJourney(page, 3);
 
   return (
     <main className="min-h-screen bg-[#07111f] text-white">
@@ -107,6 +115,20 @@ export function SeoPageShell({ page }: { page: SeoPage }) {
 
             <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Next read</p>
+              <p className="mt-3 text-sm leading-7 text-slate-300">Move through the same topic in the next most logical format: tool → template → guide.</p>
+              <div className="mt-4 space-y-3">
+                {topicJourney.map((topicPage) => (
+                  <Link key={topicPage.slug} href={`/${topicPage.category}/${topicPage.slug}`} className="block rounded-2xl border border-white/10 bg-slate-950/60 p-4 transition hover:border-cyan-400/40 hover:bg-slate-950">
+                    <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">{prettifyCategory(topicPage.category)}</p>
+                    <h3 className="mt-2 text-base font-semibold text-white">{topicPage.keyword}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">{topicPage.description}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Same-topic cluster</p>
               <div className="mt-4 space-y-3">
                 {topicPages.map((topicPage) => (
                   <Link key={topicPage.slug} href={`/${topicPage.category}/${topicPage.slug}`} className="block rounded-2xl border border-white/10 bg-slate-950/60 p-4 transition hover:border-cyan-400/40 hover:bg-slate-950">
@@ -175,7 +197,7 @@ export function SeoPageShell({ page }: { page: SeoPage }) {
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Related pages</p>
               <h2 className="mt-3 text-2xl font-semibold">Keep exploring the topic cluster</h2>
             </div>
-            <p className="hidden text-sm text-slate-400 md:block">Cross-linked by topic, category, and explicit intent match.</p>
+            <p className="hidden text-sm text-slate-400 md:block">Cross-linked by explicit intent match, same-topic journeys, batch-level support pages, and category hubs.</p>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {relatedPages.map((relatedPage) => (
