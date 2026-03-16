@@ -30,7 +30,9 @@ Rules:
 - The follow_up_email must be short, natural, professional, and ready to send in English.
 - The crm_note should be structured and concise.
 - If objections are unclear, return an empty array or a minimal accurate note.
-- Output JSON only, without markdown fences.`;
+- Output raw JSON only.
+- Do not wrap the JSON in markdown fences.
+- Do not add any explanation before or after the JSON.`;
 
 function fallbackGenerate(transcript: string, callType: CallType): GenerateResponse {
   const snippet = transcript
@@ -60,6 +62,14 @@ function fallbackGenerate(transcript: string, callType: CallType): GenerateRespo
   };
 }
 
+function normalizeJsonContent(content: string) {
+  const trimmed = content.trim();
+  if (trimmed.startsWith("```") ) {
+    return trimmed.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+  }
+  return trimmed;
+}
+
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
@@ -69,25 +79,40 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
     return fallbackGenerate(transcript, callType);
   }
 
-  const response = await fetch(`${baseUrl}/chat/completions`, {
+  const requestBody = {
+    model,
+    temperature: 0.3,
+    messages: [
+      { role: "system", content: systemPrompt },
+      {
+        role: "user",
+        content: `Call type: ${callType}\n\nTranscript:\n${transcript}`,
+      },
+    ],
+  };
+
+  let response = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model,
-      temperature: 0.3,
+      ...requestBody,
       response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: `Call type: ${callType}\n\nTranscript:\n${transcript}`,
-        },
-      ],
     }),
   });
+
+  if (!response.ok) {
+    response = await fetch(`${baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+  }
 
   if (!response.ok) {
     const text = await response.text();
@@ -101,7 +126,7 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
     throw new Error("Model returned empty content.");
   }
 
-  const parsed = JSON.parse(content) as GenerateResponse;
+  const parsed = JSON.parse(normalizeJsonContent(content)) as GenerateResponse;
   return {
     summary: parsed.summary || "",
     pain_points: parsed.pain_points || [],
