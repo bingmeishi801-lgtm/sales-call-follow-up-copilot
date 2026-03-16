@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { SignInButton } from "@/components/sign-in-button";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { trackEvent } from "@/lib/analytics";
+import { getPagesByCategory } from "@/lib/seo-pages";
 
 const features = [
   {
@@ -42,6 +43,30 @@ const testimonials = [
   },
 ];
 
+const hubCards = [
+  {
+    title: "Tools",
+    href: "/tools",
+    description: "Intent-driven pages for people actively looking for generators and summary tools.",
+  },
+  {
+    title: "Templates",
+    href: "/templates",
+    description: "Reusable structures for follow-up emails, discovery notes, and CRM updates.",
+  },
+  {
+    title: "Guides",
+    href: "/guides",
+    description: "Educational pages that explain how to handle post-call workflow better.",
+  },
+];
+
+const featuredPages = [
+  ...getPagesByCategory("tools").slice(0, 3),
+  ...getPagesByCategory("templates").slice(0, 1),
+  ...getPagesByCategory("guides").slice(0, 2),
+];
+
 export default function Home() {
   useEffect(() => {
     void trackEvent("page_view", { page: "landing" });
@@ -57,9 +82,9 @@ export default function Home() {
         </Link>
         <div className="flex items-center gap-3">
           <nav className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
-            <a href="#features" className="hover:text-white">Features</a>
-            <a href="#how-it-works" className="hover:text-white">How it works</a>
-            <a href="#waitlist" className="hover:text-white">Waitlist</a>
+            <Link href="/tools" className="hover:text-white">Tools</Link>
+            <Link href="/templates" className="hover:text-white">Templates</Link>
+            <Link href="/guides" className="hover:text-white">Guides</Link>
           </nav>
           <SignInButton dark />
           <Link
@@ -147,6 +172,24 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-6 pb-20">
+        <div className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">SEO structure</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">A scalable content architecture for tools, templates, and guides</h2>
+          <p className="mt-4 text-base leading-8 text-slate-300">
+            The site now groups keyword pages by search intent so it is easier to expand the cluster over time and easier for visitors to find the right entry point.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {hubCards.map((card) => (
+            <Link key={card.title} href={card.href} className="rounded-[24px] border border-white/10 bg-white/5 p-6 transition hover:border-cyan-400/40 hover:bg-white/10">
+              <h3 className="text-xl font-semibold text-white">{card.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{card.description}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section id="features" className="mx-auto max-w-7xl px-6 py-20">
         <div className="max-w-2xl">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Features</p>
@@ -167,7 +210,28 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" className="border-y border-white/10 bg-white/[0.03]">
+      <section className="border-y border-white/10 bg-white/[0.03]">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Featured pages</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">First keyword batch is live</h2>
+            <p className="mt-4 text-base leading-8 text-slate-300">
+              Start from the highest-intent landing pages or browse the full cluster by category.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {featuredPages.map((page) => (
+              <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="rounded-[24px] border border-white/10 bg-slate-950/60 p-5 transition hover:border-cyan-400/40 hover:bg-slate-950">
+                <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">{page.category}</p>
+                <h3 className="mt-3 text-lg font-semibold text-white">{page.keyword}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-300">{page.description}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="border-b border-white/10 bg-white/[0.03]">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <div className="grid gap-6 lg:grid-cols-3">
             {[
@@ -217,8 +281,10 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p>Sales Call Follow-up Copilot</p>
           <div className="flex items-center gap-4">
+            <Link href="/tools" className="hover:text-white">Tools</Link>
+            <Link href="/templates" className="hover:text-white">Templates</Link>
+            <Link href="/guides" className="hover:text-white">Guides</Link>
             <Link href="/app" className="hover:text-white">App</Link>
-            <a href="#waitlist" className="hover:text-white">Waitlist</a>
           </div>
         </div>
       </footer>

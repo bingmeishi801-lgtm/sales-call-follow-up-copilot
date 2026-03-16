@@ -12,6 +12,8 @@ Turn sales call transcripts into follow-up emails, CRM notes, pain points, objec
 ## Current product surface
 - Marketing landing page
 - Transcript-to-follow-up app
+- SEO content hubs for `/tools`, `/templates`, and `/guides`
+- First keyword cluster of 10 SEO landing pages built on a reusable App Router pattern
 - Waitlist form with API route
 - Lightweight analytics event pipeline
 - Supabase-backed magic link sign-in
@@ -48,11 +50,22 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ## Routes
 - `/` landing page
 - `/app` transcript-to-follow-up app
+- `/tools` SEO hub for tool-intent keywords
+- `/templates` SEO hub for template-intent keywords
+- `/guides` SEO hub for educational keywords
+- `/[category]/[slug]` reusable SEO landing page route powered by `src/lib/seo-pages.ts`
 - `/api/generate` generation endpoint
 - `/api/waitlist` waitlist submission endpoint
 - `/api/track` lightweight analytics endpoint
 - `/api/auth/status` auth configuration check
 - `/api/history` save and fetch signed-in generation history
+
+## SEO page structure
+- Centralized SEO metadata and page copy lives in `src/lib/seo-pages.ts`
+- The dynamic route at `src/app/[category]/[slug]/page.tsx` statically generates keyword pages from that config
+- Shared page UI lives in `src/components/seo-page-shell.tsx`
+- Category hubs live at `/tools`, `/templates`, and `/guides`
+- To add more keyword pages later, the fastest path is to append new entries in `seoPages` and link related pages through `relatedSlugs`
 
 ## MVP outputs
 - Call Summary
