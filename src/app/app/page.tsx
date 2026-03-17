@@ -309,7 +309,6 @@ export default function AppPage() {
       crm_note: item.crm_note,
     });
     setActiveHistoryId(item.id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const historySubtitle = "Recent generations saved to Supabase";
