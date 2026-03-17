@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SignInButton } from "@/components/sign-in-button";
-import { WaitlistForm } from "@/components/waitlist-form";
 import { trackEvent } from "@/lib/analytics";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 
@@ -397,7 +396,7 @@ export default function AppPage() {
                 <button
                   onClick={handleCopyAll}
                   disabled={!data}
-                  className="inline-flex items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {copied === "All outputs" ? "Copied all" : "Copy all"}
                 </button>
@@ -433,13 +432,6 @@ export default function AppPage() {
                   {error}
                 </div>
               ) : null}
-              <div className="rounded-2xl border border-white/10 bg-slate-950/80 p-4">
-                <p className="text-sm font-medium text-white">Get updates for the production version</p>
-                <p className="mt-1 text-xs leading-6 text-slate-400">Join the waitlist for login, analytics, CRM sync, and improved AI output quality.</p>
-                <div className="mt-3">
-                  <WaitlistForm source="app" compact dark />
-                </div>
-              </div>
             </div>
           </section>
 
@@ -532,12 +524,12 @@ export default function AppPage() {
                   </div>
                   <button
                     onClick={() => handleCopy(section.title, section.content, section.key)}
-                    className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                   >
                     {copied === section.title ? "Copied" : "Copy"}
                   </button>
                 </div>
-                <pre className="mt-4 whitespace-pre-wrap break-words font-sans text-sm leading-7 text-slate-700">
+                <pre className="mt-4 whitespace-pre-wrap break-words font-sans text-[15px] leading-8 text-slate-700">
                   {section.content}
                 </pre>
               </div>
