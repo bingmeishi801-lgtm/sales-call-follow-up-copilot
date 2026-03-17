@@ -16,20 +16,77 @@
 
 ---
 
+## 当前进度总览（三栏版）
+
+### 已完成
+- 项目初始化：Next.js / Tailwind / `.env.local` / Vercel 部署已完成
+- 页面与路由：`/` 首页、`/app` 应用页、基础 Header / Footer 已完成
+- Landing Page 基础：Hero、How It Works、基础 CTA、基础 SEO meta 已完成
+- App 主流程：transcript 输入、call type 选择、Generate、6 个输出模块、copy 功能已完成
+- AI 能力：`/api/generate`、system prompt、结构化 JSON 输出、基础错误处理已完成
+- 体验优化：placeholder、最小长度校验、loading、空状态、错误提示已完成
+- 埋点基础：`page_view`、`generate_clicked`、`generate_success`、`generate_failed`、`copy_follow_up_email`、`copy_crm_note` 已完成
+- 部署验证：生产环境变量、Vercel 部署、API 可用性检查已完成
+- 上线主链：Google 登录、history 保存与刷新恢复、usage 扣减已跑通
+- 后续迭代中已提前完成：历史记录、登录、模板页
+
+### 进行中
+- Landing Page 内容还可继续补齐：Problem 区、Target User 区、部分 CTA 文案
+- Output Preview 区只完成了重点模块突出，"完整 6 模块示例" 还没完全按清单收口
+- 埋点只完成了最小闭环，`copy_summary / copy_pain_points / copy_objections / copy_next_steps` 还没补齐
+- 测试覆盖还不完整：目前 discovery call、copy、错误场景已测，demo / follow-up / 多 transcript 还没系统补完
+- README 和任务清单已经基本对齐，但还可以继续跟着产品演进维护
+
+### 未开始
+- `types` 目录整理
+- `GenerateRequest` / `OutputSection` 等更完整的 types 抽离
+- LLM 超时处理
+- 首页基础 schema
+- 移动端基础兼容性系统检查
+- 3 份不同 transcript 的系统回归测试
+- demo call / follow-up call 完整测试
+- 导出功能
+- 集成功能
+
+### 下一步 TODO（按优先级）
+
+#### P0：先补闭环质量
+- [ ] 补齐 `copy_summary / copy_pain_points / copy_objections / copy_next_steps` 埋点
+- [ ] 系统测试 demo call
+- [ ] 系统测试 follow-up call
+- [ ] 用至少 3 份不同 transcript 做回归测试
+- [ ] 检查移动端基础兼容性
+
+#### P1：补内容与结构
+- [ ] 补 Landing Page 的 Problem 区
+- [ ] 补 Landing Page 的 Target User 区
+- [ ] 补完整的 6 模块 Output Preview 示例
+- [ ] 补 CTA 文案“Generate from transcript”或等价入口
+- [ ] 补首页基础 schema
+
+#### P2：补工程与后续能力
+- [ ] 建 `types` 目录并抽离公共类型
+- [ ] 明确 `GenerateRequest` / `OutputSection` 等类型
+- [ ] 补 LLM 超时处理
+- [ ] 评估导出功能（copy all / markdown / txt）
+- [ ] 评估后续集成方向（CRM / Notion / Slack）
+
+---
+
 ## A. 项目初始化
 
 ### A1. 技术栈初始化
-- [ ] 初始化 Next.js 项目
-- [ ] 配置 Tailwind CSS
-- [ ] 配置基础目录结构
-- [ ] 配置环境变量 `.env.local`
-- [ ] 接入部署环境（Vercel）
+- [x] 初始化 Next.js 项目
+- [x] 配置 Tailwind CSS
+- [x] 配置基础目录结构
+- [x] 配置环境变量 `.env.local`
+- [x] 接入部署环境（Vercel）
 
 ### A2. 基础工程配置
-- [ ] ESLint / Prettier 基础配置
-- [ ] 定义全局样式
-- [ ] 定义 UI 组件目录
-- [ ] 定义 API 调用目录
+- [x] ESLint / Prettier 基础配置
+- [x] 定义全局样式
+- [x] 定义 UI 组件目录
+- [x] 定义 API 调用目录
 - [ ] 定义 types 目录
 
 ---
@@ -37,24 +94,24 @@
 ## B. 信息架构与路由
 
 ### B1. 页面路由
-- [ ] 创建首页 `/`
-- [ ] 创建产品页/应用页 `/app`
+- [x] 创建首页 `/`
+- [x] 创建产品页/应用页 `/app`
 
 ### B2. 页面结构
-- [ ] 首页结构骨架
-- [ ] App 页结构骨架
-- [ ] Header / CTA 统一样式
-- [ ] Footer 基础内容
+- [x] 首页结构骨架
+- [x] App 页结构骨架
+- [x] Header / CTA 统一样式
+- [x] Footer 基础内容
 
 ---
 
 ## C. Landing Page 开发
 
 ### C1. Hero 区
-- [ ] 主标题
-- [ ] 副标题
-- [ ] CTA 按钮
-- [ ] Demo 入口按钮
+- [x] 主标题
+- [x] 副标题
+- [x] CTA 按钮
+- [x] Demo 入口按钮
 
 ### C2. Problem 区
 - [ ] 写 sales call 后整理痛点
@@ -62,15 +119,15 @@
 
 ### C3. Output Preview 区
 - [ ] 展示 6 个输出模块示例
-- [ ] 重点突出：
+- [x] 重点突出：
   - Follow-up Email
   - CRM Note
   - Next Steps
 
 ### C4. How It Works 区
-- [ ] Step 1: Paste transcript
-- [ ] Step 2: Generate outputs
-- [ ] Step 3: Copy and use
+- [x] Step 1: Paste transcript
+- [x] Step 2: Generate outputs
+- [x] Step 3: Copy and use
 
 ### C5. Target User 区
 - [ ] Founder-led sales
@@ -78,13 +135,13 @@
 - [ ] Agency / freelancer
 
 ### C6. CTA 区
-- [ ] “Try the demo”
+- [x] “Try the demo”
 - [ ] “Generate from transcript”
 
 ### C7. SEO 基础
-- [ ] 首页 title
-- [ ] 首页 meta description
-- [ ] OG title / description
+- [x] 首页 title
+- [x] 首页 meta description
+- [x] OG title / description
 - [ ] 基础 schema（可选）
 
 ---
@@ -92,50 +149,50 @@
 ## D. App 页面开发
 
 ### D1. 输入区域
-- [ ] Transcript 文本输入框
-- [ ] Call type 下拉框
-- [ ] Generate 按钮
-- [ ] 输入校验提示
+- [x] Transcript 文本输入框
+- [x] Call type 下拉框
+- [x] Generate 按钮
+- [x] 输入校验提示
 
 ### D2. 输出区域
-- [ ] Summary 卡片
-- [ ] Pain Points 卡片
-- [ ] Objections 卡片
-- [ ] Next Steps 卡片
-- [ ] Follow-up Email 卡片
-- [ ] CRM Note 卡片
+- [x] Summary 卡片
+- [x] Pain Points 卡片
+- [x] Objections 卡片
+- [x] Next Steps 卡片
+- [x] Follow-up Email 卡片
+- [x] CRM Note 卡片
 
 ### D3. 交互状态
-- [ ] 默认空状态
-- [ ] Loading 状态
-- [ ] 成功状态
-- [ ] 错误状态
+- [x] 默认空状态
+- [x] Loading 状态
+- [x] 成功状态
+- [x] 错误状态
 
 ### D4. Copy 功能
-- [ ] 每个模块支持 copy
-- [ ] Copy 成功 toast / 提示
-- [ ] 复制内容格式优化
+- [x] 每个模块支持 copy
+- [x] Copy 成功 toast / 提示
+- [x] 复制内容格式优化
 
 ---
 
 ## E. AI 能力与后端接口
 
 ### E1. API Route
-- [ ] 创建 `/api/generate`
-- [ ] 接收 transcript + callType
-- [ ] 做参数校验
-- [ ] 调用 LLM 接口
-- [ ] 返回结构化 JSON
+- [x] 创建 `/api/generate`
+- [x] 接收 transcript + callType
+- [x] 做参数校验
+- [x] 调用 LLM 接口
+- [x] 返回结构化 JSON
 
 ### E2. Prompt 设计
-- [ ] 设计 system prompt
-- [ ] 设计 output schema
-- [ ] 约束 6 个模块输出
-- [ ] 约束不得编造
-- [ ] 区分不同 call type
+- [x] 设计 system prompt
+- [x] 设计 output schema
+- [x] 约束 6 个模块输出
+- [x] 约束不得编造
+- [x] 区分不同 call type
 
 ### E3. 结果格式
-- [ ] 统一返回 JSON：
+- [x] 统一返回 JSON：
   - summary
   - pain_points
   - objections
@@ -145,118 +202,118 @@
 
 ### E4. 错误处理
 - [ ] LLM 超时处理
-- [ ] JSON 解析失败处理
-- [ ] 空结果处理
-- [ ] 前端错误提示
+- [x] JSON 解析失败处理
+- [x] 空结果处理
+- [x] 前端错误提示
 
 ---
 
 ## F. 数据结构与 Types
 
 ### F1. Type 定义
-- [ ] 定义 `CallType`
+- [x] 定义 `CallType`
 - [ ] 定义 `GenerateRequest`
-- [ ] 定义 `GenerateResponse`
+- [x] 定义 `GenerateResponse`
 - [ ] 定义 `OutputSection`
 
 ### F2. 前后端字段统一
-- [ ] 确认字段命名统一
-- [ ] 确认数组字段展示逻辑
-- [ ] 确认空值 fallback
+- [x] 确认字段命名统一
+- [x] 确认数组字段展示逻辑
+- [x] 确认空值 fallback
 
 ---
 
 ## G. 可用性与体验优化
 
 ### G1. 输入体验
-- [ ] 设置 placeholder transcript
-- [ ] 限制最小输入长度
-- [ ] 保留用户输入内容，失败不清空
+- [x] 设置 placeholder transcript
+- [x] 限制最小输入长度
+- [x] 保留用户输入内容，失败不清空
 
 ### G2. 输出体验
-- [ ] 卡片层级清楚
-- [ ] 可读性优化
-- [ ] Email 区块支持良好排版
-- [ ] CRM Note 结构清晰
+- [x] 卡片层级清楚
+- [x] 可读性优化
+- [x] Email 区块支持良好排版
+- [x] CRM Note 结构清晰
 
 ### G3. Loading 体验
-- [ ] 按钮 loading
-- [ ] 结果区 skeleton（可选）
-- [ ] 明确“正在生成”的提示
+- [x] 按钮 loading
+- [x] 结果区 skeleton（可选）
+- [x] 明确“正在生成”的提示
 
 ---
 
 ## H. 埋点与基础数据
 
 ### H1. 埋点事件
-- [ ] `page_view`
-- [ ] `generate_clicked`
-- [ ] `generate_success`
-- [ ] `generate_failed`
+- [x] `page_view`
+- [x] `generate_clicked`
+- [x] `generate_success`
+- [x] `generate_failed`
 - [ ] `copy_summary`
 - [ ] `copy_pain_points`
 - [ ] `copy_objections`
 - [ ] `copy_next_steps`
-- [ ] `copy_follow_up_email`
-- [ ] `copy_crm_note`
+- [x] `copy_follow_up_email`
+- [x] `copy_crm_note`
 
 ### H2. 最小方案
-- [ ] 先接最简单 analytics（如 Plausible / PostHog / GA）
+- [x] 先接最简单 analytics（如 Plausible / PostHog / GA）
 
 ---
 
 ## I. 部署与验证
 
 ### I1. 部署
-- [ ] 配置生产环境变量
-- [ ] 部署到 Vercel
-- [ ] 检查 API 可用性
+- [x] 配置生产环境变量
+- [x] 部署到 Vercel
+- [x] 检查 API 可用性
 - [ ] 检查移动端基础兼容
 
 ### I2. 验证
 - [ ] 用 3 份不同 transcript 测试
-- [ ] 测试 discovery call
+- [x] 测试 discovery call
 - [ ] 测试 demo call
 - [ ] 测试 follow-up call
-- [ ] 测试 copy 功能
-- [ ] 测试错误场景
+- [x] 测试 copy 功能
+- [x] 测试错误场景
 
 ---
 
 ## J. MVP 上线前检查清单
 
-- [ ] 首页文案完整
-- [ ] `/app` 可正常使用
-- [ ] 生成结果稳定
-- [ ] 复制功能正常
-- [ ] meta 信息完整
+- [x] 首页文案完整
+- [x] `/app` 可正常使用
+- [x] 生成结果稳定
+- [x] 复制功能正常
+- [x] meta 信息完整
 - [ ] 移动端不崩
-- [ ] 无明显报错
-- [ ] 有基本埋点
+- [x] 无明显报错
+- [x] 有基本埋点
 
 ---
 
 ## 推荐开发优先级
 
 ### P0：必须先做
-- [ ] 首页
-- [ ] `/app` 页面
-- [ ] transcript 输入
-- [ ] call type 选择
-- [ ] generate API
-- [ ] 6 个输出模块
-- [ ] copy 功能
-- [ ] 基础部署
+- [x] 首页
+- [x] `/app` 页面
+- [x] transcript 输入
+- [x] call type 选择
+- [x] generate API
+- [x] 6 个输出模块
+- [x] copy 功能
+- [x] 基础部署
 
 ### P1：第一版上线前尽量做
-- [ ] loading 状态优化
-- [ ] 错误处理优化
-- [ ] 埋点
-- [ ] SEO meta
+- [x] loading 状态优化
+- [x] 错误处理优化
+- [x] 埋点
+- [x] SEO meta
 
 ### P2：后续迭代
-- [ ] 历史记录
-- [ ] 登录
+- [x] 历史记录
+- [x] 登录
 - [ ] 导出
-- [ ] 模板页
+- [x] 模板页
 - [ ] 集成
