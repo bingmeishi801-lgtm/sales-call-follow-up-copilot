@@ -32,18 +32,18 @@
 
 ### 进行中
 - 测试覆盖还可继续加严（更多真实业务 transcript + 边界输入）
+- 集成功能仍未开始（建议 HubSpot 优先）
 - README 和任务清单已经基本对齐，但还可以继续跟着产品演进维护
 
 ### 未开始
-- 导出功能
 - 集成功能
 
 ### 下一步 TODO（按优先级）
 
 #### P0：先补闭环质量
-- [ ] 系统测试 demo call
-- [ ] 系统测试 follow-up call
-- [ ] 用至少 3 份不同 transcript 做回归测试
+- [x] 系统测试 demo call
+- [x] 系统测试 follow-up call
+- [x] 用至少 3 份不同 transcript 做回归测试
 
 #### P1：补内容与结构
 - [x] 补 Landing Page 的 Problem 区
@@ -57,6 +57,7 @@
 - [x] 明确 `GenerateRequest` / `OutputSection` 等类型
 - [x] 补 LLM 超时处理
 - [x] 评估导出功能（copy all / markdown / txt）
+- [x] 实现导出功能（.txt / .md）
 - [x] 评估后续集成方向（CRM / Notion / Slack）
 
 ---
@@ -259,10 +260,10 @@
 - [x] 检查移动端基础兼容
 
 ### I2. 验证
-- [ ] 用 3 份不同 transcript 测试
+- [x] 用 3 份不同 transcript 测试
 - [x] 测试 discovery call
-- [ ] 测试 demo call
-- [ ] 测试 follow-up call
+- [x] 测试 demo call
+- [x] 测试 follow-up call
 - [x] 测试 copy 功能
 - [x] 测试错误场景
 
@@ -275,7 +276,7 @@
 - [x] 生成结果稳定
 - [x] 复制功能正常
 - [x] meta 信息完整
-- [ ] 移动端不崩
+- [x] 移动端不崩
 - [x] 无明显报错
 - [x] 有基本埋点
 
@@ -302,6 +303,6 @@
 ### P2：后续迭代
 - [x] 历史记录
 - [x] 登录
-- [ ] 导出
+- [x] 导出
 - [x] 模板页
 - [ ] 集成

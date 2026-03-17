@@ -242,9 +242,21 @@ export default function AppPage() {
     window.setTimeout(() => setCopied(null), 1600);
   }
 
-  async function handleCopyAll() {
-    if (!data) return;
-    const content = [
+  function buildCombinedContent(format: "txt" | "md") {
+    if (!data) return "";
+
+    if (format === "md") {
+      return [
+        `## Call Summary\n${data.summary}`,
+        `## Key Pain Points\n${data.pain_points.map((item) => `- ${item}`).join("\n")}`,
+        `## Objections\n${data.objections.map((item) => `- ${item}`).join("\n")}`,
+        `## Next Steps\n${data.next_steps.map((item) => `- ${item}`).join("\n")}`,
+        `## Follow-up Email\n${data.follow_up_email}`,
+        `## CRM Note\n${data.crm_note}`,
+      ].join("\n\n");
+    }
+
+    return [
       `Call Summary\n${data.summary}`,
       `Key Pain Points\n${data.pain_points.join("\n")}`,
       `Objections\n${data.objections.join("\n")}`,
@@ -252,9 +264,30 @@ export default function AppPage() {
       `Follow-up Email\n${data.follow_up_email}`,
       `CRM Note\n${data.crm_note}`,
     ].join("\n\n");
+  }
+
+  async function handleCopyAll() {
+    if (!data) return;
+    const content = buildCombinedContent("txt");
     await navigator.clipboard.writeText(content);
     setCopied("All outputs");
     window.setTimeout(() => setCopied(null), 1600);
+  }
+
+  function handleExport(format: "txt" | "md") {
+    if (!data) return;
+    const content = buildCombinedContent(format);
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const now = new Date();
+    const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
+    a.href = url;
+    a.download = `sales-follow-up-${callType}-${stamp}.${format}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   async function deleteHistoryItem(item: HistoryItem) {
@@ -374,7 +407,7 @@ export default function AppPage() {
                   Tip: give the model a detailed transcript for better pain points, objections, and next steps.
                 </p>
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <button
                   onClick={handleGenerate}
                   disabled={loading || (!!usageStatus && usageStatus.remaining <= 0)}
@@ -388,6 +421,20 @@ export default function AppPage() {
                   className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {copied === "All outputs" ? "Copied all" : "Copy all"}
+                </button>
+                <button
+                  onClick={() => handleExport("txt")}
+                  disabled={!data}
+                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Export .txt
+                </button>
+                <button
+                  onClick={() => handleExport("md")}
+                  disabled={!data}
+                  className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Export .md
                 </button>
               </div>
               <div className="rounded-2xl border border-white/10 bg-slate-950/80 p-4">
