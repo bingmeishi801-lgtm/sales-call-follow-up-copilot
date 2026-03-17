@@ -43,6 +43,28 @@ const testimonials = [
   },
 ];
 
+const problemPoints = [
+  "每通销售电话后还要手动整理 10-20 分钟，效率被 admin 工作拖慢。",
+  "跟进常常不够及时，客户细节容易丢，影响推进节奏。",
+  "不同人写的 recap / CRM note 质量不一致，管理层很难横向对齐。",
+  "同一份 transcript 要反复改写成邮件、笔记、next steps，重复劳动重。",
+];
+
+const targetUsers = [
+  {
+    title: "Founder-led sales",
+    desc: "创始人亲自卖产品，需要更快完成会后跟进，不想被杂务拖住。",
+  },
+  {
+    title: "SDR / AE",
+    desc: "高频打电话、要快速发 follow-up，同时保证 CRM 更新标准化。",
+  },
+  {
+    title: "Agency / Freelancer",
+    desc: "一人谈单一人交付，跟进效率和专业感直接影响成交率。",
+  },
+];
+
 const hubCards = [
   {
     title: "Tools",
@@ -115,12 +137,18 @@ export default function Home() {
                 Generate follow-up emails, CRM notes, pain points, objections, and next steps from one transcript. Built for founders and lean sales teams that need speed without losing quality.
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 href="/app"
                 className="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
               >
                 Try the live demo
+              </Link>
+              <Link
+                href="/app"
+                className="inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/5"
+              >
+                Generate from transcript
               </Link>
               <a
                 href="#waitlist"
@@ -155,21 +183,19 @@ export default function Home() {
                     Thanks again for the conversation today. Based on what you shared, the main priorities are speeding up rep follow-up and making CRM updates more consistent...
                   </p>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                    <p className="text-sm font-medium text-slate-300">Pain Points</p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-400">
-                      <li>Manual recap work takes too long</li>
-                      <li>Managers lack consistent visibility</li>
-                    </ul>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                    <p className="text-sm font-medium text-slate-300">Next Steps</p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-400">
-                      <li>Send recap with pricing overview</li>
-                      <li>Book a short team demo this week</li>
-                    </ul>
-                  </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {[
+                    "Call Summary",
+                    "Key Pain Points",
+                    "Objections",
+                    "Next Steps",
+                    "Follow-up Email",
+                    "CRM Note",
+                  ].map((item) => (
+                    <div key={item} className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-slate-300">
+                      {item}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -309,6 +335,34 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="border-y border-white/10 bg-white/[0.03]">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Problem</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Sales calls are useful. Post-call admin is the bottleneck.</h2>
+              <ul className="mt-5 space-y-3 text-sm leading-7 text-slate-300">
+                {problemPoints.map((item) => (
+                  <li key={item} className="rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3">• {item}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Target users</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Who this is built for</h2>
+              <div className="mt-5 space-y-3">
+                {targetUsers.map((item) => (
+                  <div key={item.title} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                    <h3 className="text-base font-semibold text-white">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-300">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="how-it-works" className="border-y border-white/10 bg-white/[0.03]">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <div className="grid gap-6 lg:grid-cols-3">
@@ -354,6 +408,27 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "Sales Call Follow-up Copilot",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            description:
+              "Turn sales call transcripts into follow-up emails, CRM notes, pain points, objections, and next steps.",
+            url: "https://sales-call-follow-up-copilot.vercel.app",
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+            },
+          }),
+        }}
+      />
 
       <footer className="border-t border-white/10 px-6 py-8 text-sm text-slate-400">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

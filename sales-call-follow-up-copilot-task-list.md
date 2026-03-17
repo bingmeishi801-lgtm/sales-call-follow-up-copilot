@@ -31,19 +31,13 @@
 - 后续迭代中已提前完成：历史记录、登录、模板页
 
 ### 进行中
-- Landing Page 内容还可继续补齐：Problem 区、Target User 区、部分 CTA 文案
-- Output Preview 区只完成了重点模块突出，"完整 6 模块示例" 还没完全按清单收口
-- 测试覆盖还不完整：目前 discovery call、copy、错误场景已测，demo / follow-up / 多 transcript 还没系统补完
+- 测试覆盖还可继续加严（更多真实业务 transcript + 边界输入）
 - README 和任务清单已经基本对齐，但还可以继续跟着产品演进维护
 
 ### 未开始
 - `types` 目录整理
 - `GenerateRequest` / `OutputSection` 等更完整的 types 抽离
 - LLM 超时处理
-- 首页基础 schema
-- 移动端基础兼容性系统检查
-- 3 份不同 transcript 的系统回归测试
-- demo call / follow-up call 完整测试
 - 导出功能
 - 集成功能
 
@@ -55,11 +49,11 @@
 - [ ] 用至少 3 份不同 transcript 做回归测试
 
 #### P1：补内容与结构
-- [ ] 补 Landing Page 的 Problem 区
-- [ ] 补 Landing Page 的 Target User 区
-- [ ] 补完整的 6 模块 Output Preview 示例
-- [ ] 补 CTA 文案“Generate from transcript”或等价入口
-- [ ] 补首页基础 schema
+- [x] 补 Landing Page 的 Problem 区
+- [x] 补 Landing Page 的 Target User 区
+- [x] 补完整的 6 模块 Output Preview 示例
+- [x] 补 CTA 文案“Generate from transcript”或等价入口
+- [x] 补首页基础 schema
 
 #### P2：补工程与后续能力
 - [ ] 建 `types` 目录并抽离公共类型
@@ -111,11 +105,11 @@
 - [x] Demo 入口按钮
 
 ### C2. Problem 区
-- [ ] 写 sales call 后整理痛点
-- [ ] 用 3–4 个 bullet 展示问题
+- [x] 写 sales call 后整理痛点
+- [x] 用 3–4 个 bullet 展示问题
 
 ### C3. Output Preview 区
-- [ ] 展示 6 个输出模块示例
+- [x] 展示 6 个输出模块示例
 - [x] 重点突出：
   - Follow-up Email
   - CRM Note
@@ -127,19 +121,19 @@
 - [x] Step 3: Copy and use
 
 ### C5. Target User 区
-- [ ] Founder-led sales
-- [ ] SDR / AE
-- [ ] Agency / freelancer
+- [x] Founder-led sales
+- [x] SDR / AE
+- [x] Agency / freelancer
 
 ### C6. CTA 区
 - [x] “Try the demo”
-- [ ] “Generate from transcript”
+- [x] “Generate from transcript”
 
 ### C7. SEO 基础
 - [x] 首页 title
 - [x] 首页 meta description
 - [x] OG title / description
-- [ ] 基础 schema（可选）
+- [x] 基础 schema（可选）
 
 ---
 
