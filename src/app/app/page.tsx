@@ -29,6 +29,11 @@ type UsageStatus = {
   message: string;
 };
 
+type GenerateApiResult = GenerateResponse & {
+  provider?: "llm" | "fallback";
+  error?: string;
+};
+
 const USAGE_STATUS_STORAGE_KEY = "sales-call-follow-up-usage-status";
 const HUBSPOT_TARGET_STORAGE_KEY = "sales-call-follow-up-hubspot-target";
 
@@ -59,6 +64,7 @@ export default function AppPage() {
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
   const [hubspotPushing, setHubspotPushing] = useState(false);
+  const [providerMode, setProviderMode] = useState<"llm" | "fallback" | null>(null);
   const [hubspotObjectType, setHubspotObjectType] = useState<"deal" | "contact" | "company">("deal");
   const [hubspotObjectId, setHubspotObjectId] = useState("");
 
@@ -234,7 +240,7 @@ export default function AppPage() {
         body: JSON.stringify({ transcript, callType }),
       });
 
-      const result = await response.json();
+      const result = (await response.json()) as GenerateApiResult;
 
       if (!response.ok) {
         void trackEvent("generate_failed", { callType, reason: result.error || "request_failed" });
@@ -242,7 +248,8 @@ export default function AppPage() {
       }
 
       setData(result);
-      void trackEvent("generate_success", { callType });
+      setProviderMode(result.provider || "llm");
+      void trackEvent("generate_success", { callType, provider: result.provider || "llm" });
       if (userEmail) {
         await saveHistory(result);
       }
@@ -533,6 +540,9 @@ export default function AppPage() {
                 <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-400">
                   <span className="rounded-full border border-white/10 px-3 py-1">Guest: 2/day</span>
                   <span className="rounded-full border border-white/10 px-3 py-1">Signed in: 10/day</span>
+                  {providerMode === "fallback" ? (
+                    <span className="rounded-full border border-amber-300/30 bg-amber-400/10 px-3 py-1 text-amber-200">Fallback mode</span>
+                  ) : null}
                 </div>
               </div>
               {userEmail ? (
