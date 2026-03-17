@@ -346,7 +346,7 @@ export default function Home() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Waitlist</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Want the polished version as it ships?</h2>
             <p className="mt-4 max-w-2xl text-base leading-8 text-slate-300">
-              Join the waitlist to get updates as we add auth, production-grade analytics, CRM integrations, and more reliable AI outputs.
+              Join the waitlist to get updates as we ship CRM integrations, stronger analytics, and more reliable AI output quality.
             </p>
           </div>
           <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6">

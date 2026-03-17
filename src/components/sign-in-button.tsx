@@ -36,10 +36,14 @@ export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) 
       onAuthChange?.(email);
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       const email = session?.user?.email ?? null;
       setUserEmail(email);
       onAuthChange?.(email);
+
+      if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED") && email) {
+        void trackEvent("sign_in_success", { method: "google", emailDomain: email.split("@")[1] || "unknown" });
+      }
     });
 
     return () => authListener.subscription.unsubscribe();

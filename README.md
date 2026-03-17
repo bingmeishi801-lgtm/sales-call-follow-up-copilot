@@ -12,13 +12,14 @@ Turn sales call transcripts into follow-up emails, CRM notes, pain points, objec
 ## Current product surface
 - Marketing landing page
 - Transcript-to-follow-up app
+- Google sign-in via Supabase OAuth
+- Logged-in generation history saved to Supabase and restored on refresh
+- Guest usage limits plus higher logged-in daily limits
+- Waitlist form with API route
+- Lightweight analytics event pipeline
 - SEO content hubs for `/tools`, `/templates`, and `/guides`
 - **Batch 4 + Batch 5 keyword expansion live:** 94 total SEO landing pages built on the same reusable App Router pattern
 - Stronger internal-linking system across homepage, hubs, and detail pages
-- Waitlist form with API route
-- Lightweight analytics event pipeline
-- Supabase-backed Google sign-in
-- Logged-in generation history saved to Supabase
 
 ## Local development
 
@@ -44,9 +45,10 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ### Notes
 - If `OPENAI_API_KEY` is not provided, the app still works in **fallback demo mode** so the UI can be tested quickly.
 - `OPENAI_BASE_URL` supports OpenAI-compatible providers, so you can point generation to a custom API gateway instead of OpenAI official.
-- If Supabase env vars are not provided, the app still shows a **Sign in** entry but falls back gracefully.
+- If Supabase env vars are not provided, the app still renders the sign-in entry, but login and saved history will not work.
 - Waitlist submissions use Supabase when configured; otherwise they fall back to a local JSON file.
 - Generation history is only saved when the user is signed in.
+- Current auth UI is Google-only; email link and test mode are no longer exposed.
 
 ## Routes
 - `/` landing page

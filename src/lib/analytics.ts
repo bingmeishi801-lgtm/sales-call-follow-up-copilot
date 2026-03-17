@@ -6,7 +6,10 @@ export type AnalyticsEventName =
   | "copy_follow_up_email"
   | "copy_crm_note"
   | "waitlist_submit"
-  | "sign_in_clicked";
+  | "sign_in_clicked"
+  | "sign_in_success"
+  | "history_saved"
+  | "history_save_failed";
 
 export async function trackEvent(event: AnalyticsEventName, properties?: Record<string, unknown>) {
   try {

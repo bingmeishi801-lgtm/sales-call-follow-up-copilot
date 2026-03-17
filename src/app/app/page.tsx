@@ -159,7 +159,7 @@ export default function AppPage() {
     const token = authData.session?.access_token;
     if (!token) return;
 
-    await fetch("/api/history", {
+    const response = await fetch("/api/history", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -172,6 +172,13 @@ export default function AppPage() {
       }),
     });
 
+    if (!response.ok) {
+      const json = await response.json().catch(() => ({}));
+      void trackEvent("history_save_failed", { reason: json.error || "request_failed", callType });
+      throw new Error(json.error || "Failed to save history.");
+    }
+
+    void trackEvent("history_saved", { callType });
     await fetchHistory();
   }
 
