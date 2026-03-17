@@ -9,21 +9,24 @@ type SignInButtonProps = {
   onAuthChange?: (userEmail: string | null) => void;
 };
 
-const TEST_EMAIL = "test-mode@local.dev";
+function buttonStyle(dark: boolean, variant: "primary" | "secondary") {
+  if (variant === "primary") {
+    return dark
+      ? "border-cyan-300/40 bg-cyan-400 text-slate-950 hover:bg-cyan-300"
+      : "border-cyan-300 bg-cyan-500 text-slate-950 hover:bg-cyan-400";
+  }
+
+  return dark
+    ? "border-white/15 text-white hover:bg-white/10"
+    : "border-slate-300 bg-white text-slate-900 hover:bg-slate-100";
+}
 
 export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<"google" | "signout" | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const testModeEmail = typeof window !== "undefined" ? window.localStorage.getItem("test-mode-email") : null;
-    if (testModeEmail) {
-      setUserEmail(testModeEmail);
-      onAuthChange?.(testModeEmail);
-      return;
-    }
-
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
 
@@ -42,64 +45,52 @@ export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) 
     return () => authListener.subscription.unsubscribe();
   }, [onAuthChange]);
 
-  async function handleClick() {
-    setLoading(true);
+  async function handleSignOut() {
+    setLoading("signout");
     setMessage(null);
-    void trackEvent("sign_in_clicked");
 
     try {
-      const isTestMode = userEmail === TEST_EMAIL;
       const supabase = createSupabaseBrowserClient();
 
-      if (userEmail) {
-        if (isTestMode) {
-          window.localStorage.removeItem("test-mode-email");
-          setUserEmail(null);
-          onAuthChange?.(null);
-          setMessage("Signed out of test mode.");
-          return;
-        }
-
-        if (!supabase) {
-          setMessage("Auth not configured yet.");
-          return;
-        }
-
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          setMessage(error.message);
-          return;
-        }
-        setMessage("Signed out.");
-        return;
-      }
-
-      const mode = window.prompt(
-        "Type 'test' for local test mode, or enter your email for a magic sign-in link:",
-      );
-
-      if (!mode) {
-        setMessage("Sign-in canceled.");
-        return;
-      }
-
-      if (mode.trim().toLowerCase() === "test") {
-        window.localStorage.setItem("test-mode-email", TEST_EMAIL);
-        setUserEmail(TEST_EMAIL);
-        onAuthChange?.(TEST_EMAIL);
-        setMessage("Test mode enabled. History will be saved locally for quick testing.");
-        return;
-      }
-
       if (!supabase) {
-        setMessage("Auth not configured yet. Add Supabase env vars to enable sign in.");
+        setMessage("Auth not configured yet.");
         return;
       }
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email: mode.trim(),
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
+      setMessage("Signed out.");
+    } catch {
+      setMessage("Could not sign out right now.");
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    setLoading("google");
+    setMessage(null);
+    void trackEvent("sign_in_clicked", { method: "google" });
+
+    try {
+      const supabase = createSupabaseBrowserClient();
+      if (!supabase) {
+        setMessage("Auth not configured yet. Add Supabase env vars first.");
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
         options: {
-          emailRedirectTo: `${window.location.origin}/app`,
+          redirectTo: `${window.location.origin}/app`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account",
+          },
         },
       });
 
@@ -107,31 +98,39 @@ export function SignInButton({ dark = false, onAuthChange }: SignInButtonProps) 
         setMessage(error.message);
         return;
       }
-
-      setMessage("Magic link sent. Check your inbox.");
     } catch {
-      setMessage("Auth not configured yet.");
+      setMessage("Google sign-in is not ready yet. Please finish the OAuth setup in Supabase.");
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
+  }
+
+  if (userEmail) {
+    return (
+      <div className="space-y-2">
+        <button
+          onClick={() => void handleSignOut()}
+          className={`inline-flex items-center justify-center rounded-xl border px-4 py-2 text-sm font-medium transition ${buttonStyle(dark, "secondary")}`}
+        >
+          {loading === "signout" ? "Signing out..." : "Sign out"}
+        </button>
+        <p className={`max-w-xs text-xs ${dark ? "text-emerald-300" : "text-emerald-600"}`}>{userEmail}</p>
+        {message ? <p className={`max-w-xs text-xs ${dark ? "text-slate-400" : "text-slate-500"}`}>{message}</p> : null}
+      </div>
+    );
   }
 
   return (
     <div className="space-y-2">
-      <button
-        onClick={handleClick}
-        className={`inline-flex items-center justify-center rounded-xl border px-4 py-2 text-sm font-medium transition ${
-          dark
-            ? "border-white/15 text-white hover:bg-white/10"
-            : "border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
-        }`}
-      >
-        {loading ? "Checking..." : userEmail ? "Sign out" : "Sign in"}
-      </button>
-      {userEmail ? (
-        <p className={`max-w-xs text-xs ${dark ? "text-emerald-300" : "text-emerald-600"}`}>{userEmail}</p>
-      ) : null}
-      {message ? <p className={`max-w-xs text-xs ${dark ? "text-slate-400" : "text-slate-500"}`}>{message}</p> : null}
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => void handleGoogleSignIn()}
+          className={`inline-flex items-center justify-center rounded-xl border px-4 py-2 text-sm font-semibold transition ${buttonStyle(dark, "primary")}`}
+        >
+          {loading === "google" ? "Opening Google..." : "Continue with Google"}
+        </button>
+      </div>
+      {message ? <p className={`max-w-sm text-xs ${dark ? "text-slate-400" : "text-slate-500"}`}>{message}</p> : null}
     </div>
   );
 }

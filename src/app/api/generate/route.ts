@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getUserFromRequest } from "@/lib/auth";
+import { applyGuestUsageCookie, getAuthenticatedUsage, getGuestUsage } from "@/lib/usage";
 
 type CallType = "discovery" | "demo" | "follow-up";
 
@@ -154,6 +156,22 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getUserFromRequest(request);
+    const usage = user ? await getAuthenticatedUsage(user.id) : getGuestUsage(request);
+
+    if (usage.remaining <= 0) {
+      return NextResponse.json(
+        {
+          error: user
+            ? "You’ve used all 10 logged-in generations for today. Try again tomorrow."
+            : "You’ve used both guest generations for today. Sign in for more or try again tomorrow.",
+          code: "LIMIT_EXCEEDED",
+          usage,
+        },
+        { status: 429 },
+      );
+    }
+
     const body = (await request.json()) as { transcript?: string; callType?: CallType };
     const transcript = body.transcript?.trim() || "";
     const callType = body.callType || "discovery";
@@ -170,7 +188,14 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await generateWithOpenAI(transcript, callType);
-    return NextResponse.json(data);
+    const response = NextResponse.json({ ...data, usage });
+
+    if (!user) {
+      const nextUsed = Math.min(usage.used + 1, usage.limit);
+      applyGuestUsageCookie(response, request, nextUsed);
+    }
+
+    return response;
   } catch (error) {
     console.error(error);
     const message = error instanceof Error ? error.message : "We couldn’t generate the output this time. Please retry.";

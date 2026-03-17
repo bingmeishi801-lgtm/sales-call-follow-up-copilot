@@ -31,8 +31,16 @@ type HistoryItem = {
   created_at: string;
 };
 
-const TEST_MODE_EMAIL = "test-mode@local.dev";
-const TEST_MODE_STORAGE_KEY = "sales-call-follow-up-history";
+type UsageStatus = {
+  isAuthenticated: boolean;
+  limit: number;
+  used: number;
+  remaining: number;
+  resetDay: string;
+  message: string;
+};
+
+const USAGE_STATUS_STORAGE_KEY = "sales-call-follow-up-usage-status";
 
 const defaultTranscript = `Rep: Thanks for making the time today. I’d love to understand how your sales team currently handles post-call follow-up.
 Prospect: Right now it’s mostly manual. Reps write their own recap emails and update HubSpot after the call.
@@ -58,18 +66,46 @@ export default function AppPage() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
+  const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
 
   useEffect(() => {
     void trackEvent("page_view", { page: "app" });
+    const cachedUsage = window.localStorage.getItem(USAGE_STATUS_STORAGE_KEY);
+    if (cachedUsage) {
+      setUsageStatus(JSON.parse(cachedUsage) as UsageStatus);
+    }
   }, []);
 
-  async function fetchHistory() {
-    if (userEmail === TEST_MODE_EMAIL) {
-      const raw = window.localStorage.getItem(TEST_MODE_STORAGE_KEY);
-      setHistory(raw ? (JSON.parse(raw) as HistoryItem[]) : []);
-      return;
-    }
+  async function fetchUsageStatus() {
+    try {
+      setUsageLoading(true);
 
+      const headers: HeadersInit = {};
+
+      if (userEmail) {
+        const supabase = createSupabaseBrowserClient();
+        if (supabase) {
+          const { data: authData } = await supabase.auth.getSession();
+          const token = authData.session?.access_token;
+          if (token) {
+            headers.Authorization = `Bearer ${token}`;
+          }
+        }
+      }
+
+      const response = await fetch("/api/usage", { headers });
+      const json = (await response.json()) as UsageStatus;
+      setUsageStatus(json);
+      window.localStorage.setItem(USAGE_STATUS_STORAGE_KEY, JSON.stringify(json));
+    } catch {
+      // noop
+    } finally {
+      setUsageLoading(false);
+    }
+  }
+
+  async function fetchHistory() {
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
     const { data: authData } = await supabase.auth.getSession();
@@ -92,6 +128,8 @@ export default function AppPage() {
   }
 
   useEffect(() => {
+    void fetchUsageStatus();
+
     if (userEmail) {
       void fetchHistory();
     } else {
@@ -114,28 +152,6 @@ export default function AppPage() {
   }, [data]);
 
   async function saveHistory(payload: GenerateResponse) {
-    if (userEmail === TEST_MODE_EMAIL) {
-      const current = window.localStorage.getItem(TEST_MODE_STORAGE_KEY);
-      const parsed = current ? (JSON.parse(current) as HistoryItem[]) : [];
-      const nextItem: HistoryItem = {
-        id: crypto.randomUUID(),
-        call_type: callType,
-        transcript,
-        summary: payload.summary,
-        pain_points: payload.pain_points,
-        objections: payload.objections,
-        next_steps: payload.next_steps,
-        follow_up_email: payload.follow_up_email,
-        crm_note: payload.crm_note,
-        created_at: new Date().toISOString(),
-      };
-      const nextHistory = [nextItem, ...parsed].slice(0, 20);
-      window.localStorage.setItem(TEST_MODE_STORAGE_KEY, JSON.stringify(nextHistory));
-      setActiveHistoryId(nextItem.id);
-      await fetchHistory();
-      return;
-    }
-
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
 
@@ -177,9 +193,22 @@ export default function AppPage() {
     try {
       setLoading(true);
       void trackEvent("generate_clicked", { callType });
+
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (userEmail) {
+        const supabase = createSupabaseBrowserClient();
+        if (supabase) {
+          const { data: authData } = await supabase.auth.getSession();
+          const token = authData.session?.access_token;
+          if (token) {
+            headers.Authorization = `Bearer ${token}`;
+          }
+        }
+      }
+
       const response = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ transcript, callType }),
       });
 
@@ -195,6 +224,7 @@ export default function AppPage() {
       if (userEmail) {
         await saveHistory(result);
       }
+      await fetchUsageStatus();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
@@ -227,16 +257,6 @@ export default function AppPage() {
   }
 
   async function deleteHistoryItem(item: HistoryItem) {
-    if (userEmail === TEST_MODE_EMAIL) {
-      const nextHistory = history.filter((entry) => entry.id !== item.id);
-      window.localStorage.setItem(TEST_MODE_STORAGE_KEY, JSON.stringify(nextHistory));
-      setHistory(nextHistory);
-      if (activeHistoryId === item.id) {
-        setActiveHistoryId(null);
-      }
-      return;
-    }
-
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
     const { data: authData } = await supabase.auth.getSession();
@@ -258,13 +278,6 @@ export default function AppPage() {
   }
 
   async function clearAllHistory() {
-    if (userEmail === TEST_MODE_EMAIL) {
-      window.localStorage.removeItem(TEST_MODE_STORAGE_KEY);
-      setHistory([]);
-      setActiveHistoryId(null);
-      return;
-    }
-
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
     const { data: authData } = await supabase.auth.getSession();
@@ -298,10 +311,7 @@ export default function AppPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  const historySubtitle =
-    userEmail === TEST_MODE_EMAIL
-      ? "Recent generations saved in this browser"
-      : "Recent generations saved to Supabase";
+  const historySubtitle = "Recent generations saved to Supabase";
 
   return (
     <main className="min-h-screen bg-[#020817] text-white">
@@ -367,7 +377,7 @@ export default function AppPage() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   onClick={handleGenerate}
-                  disabled={loading}
+                  disabled={loading || (!!usageStatus && usageStatus.remaining <= 0)}
                   className="inline-flex flex-1 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? "Generating your follow-up assets..." : "Generate outputs"}
@@ -380,11 +390,30 @@ export default function AppPage() {
                   {copied === "All outputs" ? "Copied all" : "Copy all"}
                 </button>
               </div>
+              <div className="rounded-2xl border border-white/10 bg-slate-950/80 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-white">Daily usage</p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      {usageLoading
+                        ? "Checking remaining generations..."
+                        : usageStatus?.message || "Guest users get 2/day. Logged-in users get 10/day."}
+                    </p>
+                  </div>
+                  {usageStatus ? (
+                    <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-cyan-200">
+                      {usageStatus.remaining} / {usageStatus.limit} left
+                    </div>
+                  ) : null}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-400">
+                  <span className="rounded-full border border-white/10 px-3 py-1">Guest: 2/day</span>
+                  <span className="rounded-full border border-white/10 px-3 py-1">Signed in: 10/day</span>
+                </div>
+              </div>
               {userEmail ? (
                 <p className="text-xs text-emerald-300">
-                  {userEmail === TEST_MODE_EMAIL
-                    ? "Test mode enabled. New generations will be saved locally in this browser."
-                    : `Signed in as ${userEmail}. New generations will be saved to Supabase.`}
+                  {`Signed in as ${userEmail}. New generations will be saved to Supabase.`}
                 </p>
               ) : null}
               {error ? (
