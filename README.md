@@ -40,6 +40,7 @@ OPENAI_MODEL=gpt-4.1-mini
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_or_publishable_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+HUBSPOT_PRIVATE_APP_TOKEN=your_hubspot_private_app_token
 ```
 
 ### Notes
@@ -49,6 +50,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - Waitlist submissions use Supabase when configured; otherwise they fall back to a local JSON file.
 - Generation history is only saved when the user is signed in.
 - Current auth UI is Google-only; email link and test mode are no longer exposed.
+- HubSpot push endpoint is available at `/api/integrations/hubspot/note` (requires login + `HUBSPOT_PRIVATE_APP_TOKEN`).
 
 ## Routes
 - `/` landing page

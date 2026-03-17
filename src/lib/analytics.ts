@@ -13,7 +13,10 @@ export type AnalyticsEventName =
   | "sign_in_clicked"
   | "sign_in_success"
   | "history_saved"
-  | "history_save_failed";
+  | "history_save_failed"
+  | "hubspot_push_clicked"
+  | "hubspot_push_success"
+  | "hubspot_push_failed";
 
 export async function trackEvent(event: AnalyticsEventName, properties?: Record<string, unknown>) {
   try {

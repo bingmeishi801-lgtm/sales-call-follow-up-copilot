@@ -57,6 +57,7 @@ export default function AppPage() {
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
+  const [hubspotPushing, setHubspotPushing] = useState(false);
 
   useEffect(() => {
     void trackEvent("page_view", { page: "app" });
@@ -288,6 +289,64 @@ export default function AppPage() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  }
+
+  async function handlePushHubspot() {
+    if (!data?.crm_note) return;
+
+    if (!userEmail) {
+      setError("Please sign in before pushing notes to HubSpot.");
+      return;
+    }
+
+    const objectTypeInput = window.prompt("HubSpot object type? (deal/contact/company)", "deal");
+    if (!objectTypeInput) return;
+
+    const objectType = objectTypeInput.trim().toLowerCase();
+    if (!["deal", "contact", "company"].includes(objectType)) {
+      setError("Invalid HubSpot object type. Use deal/contact/company.");
+      return;
+    }
+
+    const objectId = window.prompt(`HubSpot ${objectType} ID?`);
+    if (!objectId) return;
+
+    try {
+      setHubspotPushing(true);
+      setError(null);
+      void trackEvent("hubspot_push_clicked", { objectType });
+
+      const supabase = createSupabaseBrowserClient();
+      const { data: authData } = supabase ? await supabase.auth.getSession() : { data: { session: null } };
+      const token = authData.session?.access_token;
+
+      const response = await fetch("/api/integrations/hubspot/note", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          objectType,
+          objectId: objectId.trim(),
+          crmNote: data.crm_note,
+        }),
+      });
+
+      const json = await response.json();
+      if (!response.ok) {
+        void trackEvent("hubspot_push_failed", { objectType, reason: json.error || "request_failed" });
+        throw new Error(json.error || "Failed to push CRM note to HubSpot.");
+      }
+
+      void trackEvent("hubspot_push_success", { objectType });
+      setCopied("Pushed to HubSpot");
+      window.setTimeout(() => setCopied(null), 1600);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to push CRM note to HubSpot.");
+    } finally {
+      setHubspotPushing(false);
+    }
   }
 
   async function deleteHistoryItem(item: HistoryItem) {
@@ -558,12 +617,23 @@ export default function AppPage() {
                     <h2 className="text-xl font-semibold">{section.title}</h2>
                     <p className="mt-1 text-xs text-slate-500">Structured for immediate copy into your sales workflow</p>
                   </div>
-                  <button
-                    onClick={() => handleCopy(section.title, section.content, section.key)}
-                    className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                  >
-                    {copied === section.title ? "Copied" : "Copy"}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {section.key === "crm_note" ? (
+                      <button
+                        onClick={() => void handlePushHubspot()}
+                        disabled={hubspotPushing}
+                        className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {hubspotPushing ? "Pushing..." : "Push to HubSpot"}
+                      </button>
+                    ) : null}
+                    <button
+                      onClick={() => handleCopy(section.title, section.content, section.key)}
+                      className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    >
+                      {copied === section.title ? "Copied" : "Copy"}
+                    </button>
+                  </div>
                 </div>
                 <pre className="mt-4 whitespace-pre-wrap break-words font-sans text-[15px] leading-8 text-slate-700">
                   {section.content}
