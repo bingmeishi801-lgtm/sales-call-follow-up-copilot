@@ -30,6 +30,7 @@ type UsageStatus = {
 };
 
 const USAGE_STATUS_STORAGE_KEY = "sales-call-follow-up-usage-status";
+const HUBSPOT_TARGET_STORAGE_KEY = "sales-call-follow-up-hubspot-target";
 
 const defaultTranscript = `Rep: Thanks for making the time today. I’d love to understand how your sales team currently handles post-call follow-up.
 Prospect: Right now it’s mostly manual. Reps write their own recap emails and update HubSpot after the call.
@@ -58,6 +59,8 @@ export default function AppPage() {
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
   const [hubspotPushing, setHubspotPushing] = useState(false);
+  const [hubspotObjectType, setHubspotObjectType] = useState<"deal" | "contact" | "company">("deal");
+  const [hubspotObjectId, setHubspotObjectId] = useState("");
 
   useEffect(() => {
     void trackEvent("page_view", { page: "app" });
@@ -65,7 +68,29 @@ export default function AppPage() {
     if (cachedUsage) {
       setUsageStatus(JSON.parse(cachedUsage) as UsageStatus);
     }
+
+    const cachedHubspot = window.localStorage.getItem(HUBSPOT_TARGET_STORAGE_KEY);
+    if (cachedHubspot) {
+      try {
+        const parsed = JSON.parse(cachedHubspot) as { objectType?: "deal" | "contact" | "company"; objectId?: string };
+        if (parsed.objectType && ["deal", "contact", "company"].includes(parsed.objectType)) {
+          setHubspotObjectType(parsed.objectType);
+        }
+        if (parsed.objectId) {
+          setHubspotObjectId(parsed.objectId);
+        }
+      } catch {
+        // ignore invalid cache
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      HUBSPOT_TARGET_STORAGE_KEY,
+      JSON.stringify({ objectType: hubspotObjectType, objectId: hubspotObjectId }),
+    );
+  }, [hubspotObjectType, hubspotObjectId]);
 
   async function fetchUsageStatus() {
     try {
@@ -299,22 +324,15 @@ export default function AppPage() {
       return;
     }
 
-    const objectTypeInput = window.prompt("HubSpot object type? (deal/contact/company)", "deal");
-    if (!objectTypeInput) return;
-
-    const objectType = objectTypeInput.trim().toLowerCase();
-    if (!["deal", "contact", "company"].includes(objectType)) {
-      setError("Invalid HubSpot object type. Use deal/contact/company.");
+    if (!hubspotObjectId.trim()) {
+      setError("Please enter a HubSpot object ID before pushing.");
       return;
     }
-
-    const objectId = window.prompt(`HubSpot ${objectType} ID?`);
-    if (!objectId) return;
 
     try {
       setHubspotPushing(true);
       setError(null);
-      void trackEvent("hubspot_push_clicked", { objectType });
+      void trackEvent("hubspot_push_clicked", { objectType: hubspotObjectType });
 
       const supabase = createSupabaseBrowserClient();
       const { data: authData } = supabase ? await supabase.auth.getSession() : { data: { session: null } };
@@ -327,19 +345,19 @@ export default function AppPage() {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          objectType,
-          objectId: objectId.trim(),
+          objectType: hubspotObjectType,
+          objectId: hubspotObjectId.trim(),
           crmNote: data.crm_note,
         }),
       });
 
       const json = await response.json();
       if (!response.ok) {
-        void trackEvent("hubspot_push_failed", { objectType, reason: json.error || "request_failed" });
+        void trackEvent("hubspot_push_failed", { objectType: hubspotObjectType, reason: json.error || "request_failed" });
         throw new Error(json.error || "Failed to push CRM note to HubSpot.");
       }
 
-      void trackEvent("hubspot_push_success", { objectType });
+      void trackEvent("hubspot_push_success", { objectType: hubspotObjectType });
       setCopied("Pushed to HubSpot");
       window.setTimeout(() => setCopied(null), 1600);
     } catch (err) {
@@ -522,6 +540,34 @@ export default function AppPage() {
                   {`Signed in as ${userEmail}. New generations will be saved to Supabase.`}
                 </p>
               ) : null}
+
+              <div className="rounded-2xl border border-white/10 bg-slate-950/80 p-4">
+                <p className="text-sm font-medium text-white">HubSpot target</p>
+                <p className="mt-1 text-xs text-slate-400">Used by "Push to HubSpot" on the CRM Note card. Target is cached locally.</p>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-xs text-slate-300">Object type</label>
+                    <select
+                      value={hubspotObjectType}
+                      onChange={(e) => setHubspotObjectType(e.target.value as "deal" | "contact" | "company")}
+                      className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400"
+                    >
+                      <option value="deal">Deal</option>
+                      <option value="contact">Contact</option>
+                      <option value="company">Company</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-xs text-slate-300">Object ID</label>
+                    <input
+                      value={hubspotObjectId}
+                      onChange={(e) => setHubspotObjectId(e.target.value)}
+                      placeholder="e.g. 123456789"
+                      className="w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400"
+                    />
+                  </div>
+                </div>
+              </div>
               {error ? (
                 <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
                   {error}
@@ -621,7 +667,7 @@ export default function AppPage() {
                     {section.key === "crm_note" ? (
                       <button
                         onClick={() => void handlePushHubspot()}
-                        disabled={hubspotPushing}
+                        disabled={hubspotPushing || !hubspotObjectId.trim()}
                         className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {hubspotPushing ? "Pushing..." : "Push to HubSpot"}
