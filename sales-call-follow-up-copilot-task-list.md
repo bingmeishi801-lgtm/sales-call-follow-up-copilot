@@ -53,7 +53,6 @@
 - [ ] 系统测试 demo call
 - [ ] 系统测试 follow-up call
 - [ ] 用至少 3 份不同 transcript 做回归测试
-- [ ] 检查移动端基础兼容性
 
 #### P1：补内容与结构
 - [ ] 补 Landing Page 的 Problem 区
@@ -266,7 +265,7 @@
 - [x] 配置生产环境变量
 - [x] 部署到 Vercel
 - [x] 检查 API 可用性
-- [ ] 检查移动端基础兼容
+- [x] 检查移动端基础兼容
 
 ### I2. 验证
 - [ ] 用 3 份不同 transcript 测试
