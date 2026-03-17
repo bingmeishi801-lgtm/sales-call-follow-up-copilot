@@ -558,7 +558,29 @@ MVP 阶段优先看：
 
 ---
 
-## 16. 最终 MVP 定义
+## 16. 当前版本定义（2026-03）
+
+> 目的：避免文档与实际产品状态脱节，以下为当前线上版本能力边界。
+
+### 16.1 已上线能力
+- Landing Page + `/app` 主流程可用
+- 登录（Google via Supabase）
+- 生成 6 模块输出（含 fallback 兜底）
+- history 保存/加载/删除/清空
+- usage 限流（guest / logged-in）
+- copy 单模块 + copy all
+- 导出 `.txt` / `.md`
+- 基础埋点 + analytics summary 接口/页面（`/api/analytics/summary` + `/analytics`）
+
+### 16.2 当前与原 MVP 的差异
+- 原文档中“登录/历史记录/导出”属于后续版本；当前已提前实现
+- HubSpot 集成为 V0（可用骨架），但不作为当前上线阻塞项
+
+### 16.3 仍在进行中
+- HubSpot 真实业务联调（真实 deal/contact/company 写入验证）
+- 模型通道稳定性持续优化（减少 fallback 占比）
+
+## 17. 最终 MVP 定义
 
 ### 一句话定义
 **A lightweight AI tool that transforms raw sales call transcripts into actionable follow-up outputs for sales teams.**

@@ -106,9 +106,13 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: numbe
 
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
-  const primaryModel = process.env.OPENAI_MODEL?.trim() || "gpt-4.1-mini";
+  const primaryModel = process.env.OPENAI_MODEL?.trim() || "gpt-5.3-codex";
   const fallbackModel = process.env.OPENAI_FALLBACK_MODEL?.trim() || "gpt-4.1-mini";
-  const models = Array.from(new Set([primaryModel, fallbackModel].filter(Boolean)));
+  const extraModels = (process.env.OPENAI_MODEL_CANDIDATES || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const models = Array.from(new Set([primaryModel, ...extraModels, fallbackModel].filter(Boolean)));
   const rawBaseUrl = process.env.OPENAI_BASE_URL?.trim() || "https://api.openai.com/v1";
   const baseUrl = rawBaseUrl.replace(/\/$/, "");
   const timeoutMs = Number(process.env.OPENAI_TIMEOUT_MS || 25000);
@@ -122,6 +126,7 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
   }
 
   let lastErrorText = "";
+  const maxAttemptsPerModel = Number(process.env.OPENAI_RETRY_PER_MODEL || 2);
 
   for (const model of models) {
     const requestBody = {
@@ -136,24 +141,8 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
       ],
     };
 
-    let response = await fetchWithTimeout(
-      `${baseUrl}/chat/completions`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          ...requestBody,
-          response_format: { type: "json_object" },
-        }),
-      },
-      timeoutMs,
-    );
-
-    if (!response.ok) {
-      response = await fetchWithTimeout(
+    for (let attempt = 1; attempt <= maxAttemptsPerModel; attempt += 1) {
+      let response = await fetchWithTimeout(
         `${baseUrl}/chat/completions`,
         {
           method: "POST",
@@ -161,39 +150,63 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify({
+            ...requestBody,
+            response_format: { type: "json_object" },
+          }),
         },
         timeoutMs,
       );
-    }
 
-    if (!response.ok) {
-      const text = await response.text();
-      lastErrorText = text;
-
-      if (text.includes("model_not_found") || text.includes("No available channel") || text.includes("在默认组")) {
-        continue;
+      if (!response.ok) {
+        response = await fetchWithTimeout(
+          `${baseUrl}/chat/completions`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify(requestBody),
+          },
+          timeoutMs,
+        );
       }
 
-      throw new Error(`LLM request failed: ${text}`);
+      if (!response.ok) {
+        const text = await response.text();
+        lastErrorText = text;
+
+        if (text.includes("model_not_found") || text.includes("No available channel") || text.includes("在默认组")) {
+          break;
+        }
+
+        const isRetryable = /timeout|timed out|rate|429|5\d\d/i.test(text);
+        if (isRetryable && attempt < maxAttemptsPerModel) {
+          await new Promise((resolve) => setTimeout(resolve, 300 * attempt));
+          continue;
+        }
+
+        throw new Error(`LLM request failed: ${text}`);
+      }
+
+      const json = await response.json();
+      const content = json.choices?.[0]?.message?.content;
+
+      if (!content) {
+        throw new Error("Model returned empty content.");
+      }
+
+      const parsed = JSON.parse(extractJsonObject(content)) as GenerateResponse;
+      return sanitizeGenerateResponse({
+        summary: parsed.summary || "",
+        pain_points: parsed.pain_points || [],
+        objections: parsed.objections || [],
+        next_steps: parsed.next_steps || [],
+        follow_up_email: parsed.follow_up_email || "",
+        crm_note: parsed.crm_note || "",
+      });
     }
-
-    const json = await response.json();
-    const content = json.choices?.[0]?.message?.content;
-
-    if (!content) {
-      throw new Error("Model returned empty content.");
-    }
-
-    const parsed = JSON.parse(extractJsonObject(content)) as GenerateResponse;
-    return sanitizeGenerateResponse({
-      summary: parsed.summary || "",
-      pain_points: parsed.pain_points || [],
-      objections: parsed.objections || [],
-      next_steps: parsed.next_steps || [],
-      follow_up_email: parsed.follow_up_email || "",
-      crm_note: parsed.crm_note || "",
-    });
   }
 
   throw new Error(`MODEL_UNAVAILABLE: ${lastErrorText || "no available model"}`);

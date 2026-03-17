@@ -36,6 +36,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.85,
     },
+    {
+      url: `${siteConfig.url}/analytics`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.7,
+    },
   ];
 
   const seoEntries: MetadataRoute.Sitemap = seoPages.map((page) => ({

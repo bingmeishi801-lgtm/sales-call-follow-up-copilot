@@ -152,6 +152,18 @@ create table if not exists public.waitlist (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.analytics_events (
+  id uuid primary key default gen_random_uuid(),
+  event text not null,
+  properties jsonb,
+  user_id uuid,
+  user_email text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_analytics_events_event_created_at
+  on public.analytics_events (event, created_at desc);
+
 create table if not exists public.generation_history (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null,
