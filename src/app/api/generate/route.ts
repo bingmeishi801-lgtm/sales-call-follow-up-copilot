@@ -82,6 +82,28 @@ function extractJsonObject(content: string) {
   return normalized;
 }
 
+function sanitizeText(value: string) {
+  return value
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/\u00a0/g, " ")
+    .replace(/�/g, "'")
+    .replace(/a\?\?/gi, "'")
+    .trim();
+}
+
+function sanitizeGenerateResponse(data: GenerateResponse): GenerateResponse {
+  return {
+    summary: sanitizeText(data.summary || ""),
+    pain_points: (data.pain_points || []).map((item) => sanitizeText(item)),
+    objections: (data.objections || []).map((item) => sanitizeText(item)),
+    next_steps: (data.next_steps || []).map((item) => sanitizeText(item)),
+    follow_up_email: sanitizeText(data.follow_up_email || ""),
+    crm_note: sanitizeText(data.crm_note || ""),
+  };
+}
+
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   const model = process.env.OPENAI_MODEL?.trim() || "gpt-4.1-mini";
@@ -144,14 +166,14 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
   }
 
   const parsed = JSON.parse(extractJsonObject(content)) as GenerateResponse;
-  return {
+  return sanitizeGenerateResponse({
     summary: parsed.summary || "",
     pain_points: parsed.pain_points || [],
     objections: parsed.objections || [],
     next_steps: parsed.next_steps || [],
     follow_up_email: parsed.follow_up_email || "",
     crm_note: parsed.crm_note || "",
-  };
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -187,7 +209,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const data = await generateWithOpenAI(transcript, callType);
+    const data = sanitizeGenerateResponse(await generateWithOpenAI(transcript, callType));
     const response = NextResponse.json({ ...data, usage });
 
     if (!user) {
