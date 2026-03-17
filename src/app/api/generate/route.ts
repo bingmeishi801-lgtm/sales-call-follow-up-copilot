@@ -223,8 +223,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const data = sanitizeGenerateResponse(await generateWithOpenAI(transcript, callType));
-    const response = NextResponse.json({ ...data, usage });
+    let usedFallback = false;
+    let data: GenerateResponse;
+
+    try {
+      data = sanitizeGenerateResponse(await generateWithOpenAI(transcript, callType));
+    } catch (modelError) {
+      const message = modelError instanceof Error ? modelError.message : String(modelError);
+      if (message.startsWith("MODEL_UNAVAILABLE")) {
+        usedFallback = true;
+        data = sanitizeGenerateResponse(fallbackGenerate(transcript, callType));
+      } else {
+        throw modelError;
+      }
+    }
+
+    const response = NextResponse.json({ ...data, usage, provider: usedFallback ? "fallback" : "llm" });
 
     if (!user) {
       const nextUsed = Math.min(usage.used + 1, usage.limit);
