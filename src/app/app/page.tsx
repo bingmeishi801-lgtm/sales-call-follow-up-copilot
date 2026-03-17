@@ -242,10 +242,15 @@ export default function AppPage() {
   async function handleCopy(title: string, content: string, key: string) {
     await navigator.clipboard.writeText(content);
     setCopied(title);
+
+    if (key === "summary") void trackEvent("copy_summary");
+    if (key === "pain_points") void trackEvent("copy_pain_points");
+    if (key === "objections") void trackEvent("copy_objections");
+    if (key === "next_steps") void trackEvent("copy_next_steps");
     if (key === "follow_up_email") void trackEvent("copy_follow_up_email");
     if (key === "crm_note") void trackEvent("copy_crm_note");
-    if (key === "summary") window.setTimeout(() => setCopied(null), 1600);
-    else window.setTimeout(() => setCopied(null), 1600);
+
+    window.setTimeout(() => setCopied(null), 1600);
   }
 
   async function handleCopyAll() {
