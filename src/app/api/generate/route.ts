@@ -106,7 +106,9 @@ function sanitizeGenerateResponse(data: GenerateResponse): GenerateResponse {
 
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
-  const model = process.env.OPENAI_MODEL?.trim() || "gpt-4.1-mini";
+  const primaryModel = process.env.OPENAI_MODEL?.trim() || "gpt-4.1-mini";
+  const fallbackModel = process.env.OPENAI_FALLBACK_MODEL?.trim() || "gpt-4.1-mini";
+  const models = Array.from(new Set([primaryModel, fallbackModel].filter(Boolean)));
   const rawBaseUrl = process.env.OPENAI_BASE_URL?.trim() || "https://api.openai.com/v1";
   const baseUrl = rawBaseUrl.replace(/\/$/, "");
 
@@ -118,62 +120,74 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
     throw new Error(`Invalid OPENAI_BASE_URL: ${baseUrl}`);
   }
 
-  const requestBody = {
-    model,
-    temperature: 0.3,
-    messages: [
-      { role: "system", content: systemPrompt },
-      {
-        role: "user",
-        content: `Call type: ${callType}\n\nTranscript:\n${transcript}`,
-      },
-    ],
-  };
+  let lastErrorText = "";
 
-  let response = await fetch(`${baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      ...requestBody,
-      response_format: { type: "json_object" },
-    }),
-  });
+  for (const model of models) {
+    const requestBody = {
+      model,
+      temperature: 0.3,
+      messages: [
+        { role: "system", content: systemPrompt },
+        {
+          role: "user",
+          content: `Call type: ${callType}\n\nTranscript:\n${transcript}`,
+        },
+      ],
+    };
 
-  if (!response.ok) {
-    response = await fetch(`${baseUrl}/chat/completions`, {
+    let response = await fetch(`${baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({
+        ...requestBody,
+        response_format: { type: "json_object" },
+      }),
+    });
+
+    if (!response.ok) {
+      response = await fetch(`${baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+    }
+
+    if (!response.ok) {
+      const text = await response.text();
+      lastErrorText = text;
+
+      if (text.includes("model_not_found") || text.includes("No available channel") || text.includes("在默认组")) {
+        continue;
+      }
+
+      throw new Error(`LLM request failed: ${text}`);
+    }
+
+    const json = await response.json();
+    const content = json.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error("Model returned empty content.");
+    }
+
+    const parsed = JSON.parse(extractJsonObject(content)) as GenerateResponse;
+    return sanitizeGenerateResponse({
+      summary: parsed.summary || "",
+      pain_points: parsed.pain_points || [],
+      objections: parsed.objections || [],
+      next_steps: parsed.next_steps || [],
+      follow_up_email: parsed.follow_up_email || "",
+      crm_note: parsed.crm_note || "",
     });
   }
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`LLM request failed: ${text}`);
-  }
-
-  const json = await response.json();
-  const content = json.choices?.[0]?.message?.content;
-
-  if (!content) {
-    throw new Error("Model returned empty content.");
-  }
-
-  const parsed = JSON.parse(extractJsonObject(content)) as GenerateResponse;
-  return sanitizeGenerateResponse({
-    summary: parsed.summary || "",
-    pain_points: parsed.pain_points || [],
-    objections: parsed.objections || [],
-    next_steps: parsed.next_steps || [],
-    follow_up_email: parsed.follow_up_email || "",
-    crm_note: parsed.crm_note || "",
-  });
+  throw new Error(`MODEL_UNAVAILABLE: ${lastErrorText || "no available model"}`);
 }
 
 export async function POST(request: NextRequest) {
@@ -220,7 +234,11 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error(error);
-    const message = error instanceof Error ? error.message : "We couldn’t generate the output this time. Please retry.";
+    const rawMessage = error instanceof Error ? error.message : "We couldn’t generate the output this time. Please retry.";
+    const message = rawMessage.startsWith("MODEL_UNAVAILABLE")
+      ? "当前模型通道暂不可用，请稍后重试（或切换备用模型）。"
+      : rawMessage;
+
     return NextResponse.json(
       { error: message },
       { status: 500 },
