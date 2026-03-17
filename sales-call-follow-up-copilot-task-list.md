@@ -35,9 +35,6 @@
 - README 和任务清单已经基本对齐，但还可以继续跟着产品演进维护
 
 ### 未开始
-- `types` 目录整理
-- `GenerateRequest` / `OutputSection` 等更完整的 types 抽离
-- LLM 超时处理
 - 导出功能
 - 集成功能
 
@@ -56,11 +53,11 @@
 - [x] 补首页基础 schema
 
 #### P2：补工程与后续能力
-- [ ] 建 `types` 目录并抽离公共类型
-- [ ] 明确 `GenerateRequest` / `OutputSection` 等类型
-- [ ] 补 LLM 超时处理
-- [ ] 评估导出功能（copy all / markdown / txt）
-- [ ] 评估后续集成方向（CRM / Notion / Slack）
+- [x] 建 `types` 目录并抽离公共类型
+- [x] 明确 `GenerateRequest` / `OutputSection` 等类型
+- [x] 补 LLM 超时处理
+- [x] 评估导出功能（copy all / markdown / txt）
+- [x] 评估后续集成方向（CRM / Notion / Slack）
 
 ---
 
@@ -78,7 +75,7 @@
 - [x] 定义全局样式
 - [x] 定义 UI 组件目录
 - [x] 定义 API 调用目录
-- [ ] 定义 types 目录
+- [x] 定义 types 目录
 
 ---
 
@@ -192,7 +189,7 @@
   - crm_note
 
 ### E4. 错误处理
-- [ ] LLM 超时处理
+- [x] LLM 超时处理
 - [x] JSON 解析失败处理
 - [x] 空结果处理
 - [x] 前端错误提示
@@ -203,9 +200,9 @@
 
 ### F1. Type 定义
 - [x] 定义 `CallType`
-- [ ] 定义 `GenerateRequest`
+- [x] 定义 `GenerateRequest`
 - [x] 定义 `GenerateResponse`
-- [ ] 定义 `OutputSection`
+- [x] 定义 `OutputSection`
 
 ### F2. 前后端字段统一
 - [x] 确认字段命名统一

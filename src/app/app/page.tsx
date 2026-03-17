@@ -5,17 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SignInButton } from "@/components/sign-in-button";
 import { trackEvent } from "@/lib/analytics";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
-
-type CallType = "discovery" | "demo" | "follow-up";
-
-type GenerateResponse = {
-  summary: string;
-  pain_points: string[];
-  objections: string[];
-  next_steps: string[];
-  follow_up_email: string;
-  crm_note: string;
-};
+import type { CallType, GenerateResponse, OutputSection } from "@/types/generate";
 
 type HistoryItem = {
   id: string;
@@ -137,7 +127,7 @@ export default function AppPage() {
     }
   }, [userEmail]);
 
-  const sections = useMemo(() => {
+  const sections = useMemo<OutputSection[]>(() => {
     if (!data) return [];
 
     return [

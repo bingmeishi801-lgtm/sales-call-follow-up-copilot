@@ -1,17 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/auth";
 import { applyGuestUsageCookie, getAuthenticatedUsage, getGuestUsage } from "@/lib/usage";
-
-type CallType = "discovery" | "demo" | "follow-up";
-
-type GenerateResponse = {
-  summary: string;
-  pain_points: string[];
-  objections: string[];
-  next_steps: string[];
-  follow_up_email: string;
-  crm_note: string;
-};
+import type { CallType, GenerateRequest, GenerateResponse } from "@/types/generate";
 
 const systemPrompt = `You are a sales follow-up copilot.
 Transform a raw sales call transcript into structured outputs for a sales workflow.
@@ -104,6 +94,16 @@ function sanitizeGenerateResponse(data: GenerateResponse): GenerateResponse {
   };
 }
 
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function generateWithOpenAI(transcript: string, callType: CallType): Promise<GenerateResponse> {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   const primaryModel = process.env.OPENAI_MODEL?.trim() || "gpt-4.1-mini";
@@ -111,6 +111,7 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
   const models = Array.from(new Set([primaryModel, fallbackModel].filter(Boolean)));
   const rawBaseUrl = process.env.OPENAI_BASE_URL?.trim() || "https://api.openai.com/v1";
   const baseUrl = rawBaseUrl.replace(/\/$/, "");
+  const timeoutMs = Number(process.env.OPENAI_TIMEOUT_MS || 25000);
 
   if (!apiKey) {
     return fallbackGenerate(transcript, callType);
@@ -135,27 +136,35 @@ async function generateWithOpenAI(transcript: string, callType: CallType): Promi
       ],
     };
 
-    let response = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        ...requestBody,
-        response_format: { type: "json_object" },
-      }),
-    });
-
-    if (!response.ok) {
-      response = await fetch(`${baseUrl}/chat/completions`, {
+    let response = await fetchWithTimeout(
+      `${baseUrl}/chat/completions`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify(requestBody),
-      });
+        body: JSON.stringify({
+          ...requestBody,
+          response_format: { type: "json_object" },
+        }),
+      },
+      timeoutMs,
+    );
+
+    if (!response.ok) {
+      response = await fetchWithTimeout(
+        `${baseUrl}/chat/completions`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(requestBody),
+        },
+        timeoutMs,
+      );
     }
 
     if (!response.ok) {
@@ -208,7 +217,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = (await request.json()) as { transcript?: string; callType?: CallType };
+    const body = (await request.json()) as GenerateRequest;
     const transcript = body.transcript?.trim() || "";
     const callType = body.callType || "discovery";
 
@@ -251,7 +260,9 @@ export async function POST(request: NextRequest) {
     const rawMessage = error instanceof Error ? error.message : "We couldn’t generate the output this time. Please retry.";
     const message = rawMessage.startsWith("MODEL_UNAVAILABLE")
       ? "当前模型通道暂不可用，请稍后重试（或切换备用模型）。"
-      : rawMessage;
+      : rawMessage.includes("AbortError") || rawMessage.toLowerCase().includes("timeout")
+        ? "生成超时了，请缩短 transcript 或稍后重试。"
+        : rawMessage;
 
     return NextResponse.json(
       { error: message },
