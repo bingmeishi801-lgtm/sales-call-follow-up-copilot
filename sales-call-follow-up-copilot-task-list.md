@@ -33,7 +33,6 @@
 ### 进行中
 - Landing Page 内容还可继续补齐：Problem 区、Target User 区、部分 CTA 文案
 - Output Preview 区只完成了重点模块突出，"完整 6 模块示例" 还没完全按清单收口
-- 埋点只完成了最小闭环，`copy_summary / copy_pain_points / copy_objections / copy_next_steps` 还没补齐
 - 测试覆盖还不完整：目前 discovery call、copy、错误场景已测，demo / follow-up / 多 transcript 还没系统补完
 - README 和任务清单已经基本对齐，但还可以继续跟着产品演进维护
 
@@ -51,7 +50,6 @@
 ### 下一步 TODO（按优先级）
 
 #### P0：先补闭环质量
-- [ ] 补齐 `copy_summary / copy_pain_points / copy_objections / copy_next_steps` 埋点
 - [ ] 系统测试 demo call
 - [ ] 系统测试 follow-up call
 - [ ] 用至少 3 份不同 transcript 做回归测试
@@ -250,10 +248,10 @@
 - [x] `generate_clicked`
 - [x] `generate_success`
 - [x] `generate_failed`
-- [ ] `copy_summary`
-- [ ] `copy_pain_points`
-- [ ] `copy_objections`
-- [ ] `copy_next_steps`
+- [x] `copy_summary`
+- [x] `copy_pain_points`
+- [x] `copy_objections`
+- [x] `copy_next_steps`
 - [x] `copy_follow_up_email`
 - [x] `copy_crm_note`
 
