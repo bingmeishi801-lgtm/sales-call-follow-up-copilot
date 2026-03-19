@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SeoPageShell } from "@/components/seo-page-shell";
 import { seoPageMap, seoPages } from "@/lib/seo-pages";
+import { siteConfig } from "@/lib/site";
 
 type RouteParams = {
   category: string;
@@ -27,16 +28,19 @@ export async function generateMetadata({
     return {};
   }
 
+  const pageUrl = `/${page.category}/${page.slug}`;
+
   return {
     title: page.title,
     description: page.description,
+    keywords: [page.keyword, page.topic.replace(/-/g, " "), page.category, siteConfig.name],
     alternates: {
-      canonical: `/${page.category}/${page.slug}`,
+      canonical: pageUrl,
     },
     openGraph: {
       title: page.title,
       description: page.description,
-      url: `/${page.category}/${page.slug}`,
+      url: pageUrl,
       type: "article",
     },
     twitter: {

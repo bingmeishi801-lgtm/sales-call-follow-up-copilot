@@ -93,6 +93,26 @@ const batchFourGuides = getBatchPagesByCategory("guides", 4, 4);
 const batchFiveTools = getBatchPagesByCategory("tools", 5, 4);
 const batchFiveTemplates = getBatchPagesByCategory("templates", 5, 4);
 const batchFiveGuides = getBatchPagesByCategory("guides", 5, 4);
+const priorityPages = [...getFeaturedPages().slice(0, 8), ...getPagesByCategory("guides").slice(0, 4)]
+  .filter((page, index, list) => list.findIndex((item) => item.slug === page.slug) === index)
+  .slice(0, 10);
+const editorialClusters = [
+  {
+    title: "Follow-up email workflow",
+    description: "For visitors who want to move from post-call chaos to a sendable buyer email fast.",
+    pages: seoPages.filter((page) => page.topic === "follow-up").slice(0, 3),
+  },
+  {
+    title: "CRM notes workflow",
+    description: "For teams cleaning up HubSpot notes, activity logging, and post-call admin discipline.",
+    pages: seoPages.filter((page) => page.topic === "crm-notes").slice(0, 3),
+  },
+  {
+    title: "Discovery and summary workflow",
+    description: "For qualification calls, recap structure, and extracting buyer pain points cleanly.",
+    pages: seoPages.filter((page) => page.topic === "discovery-call" || page.topic === "summary").slice(0, 3),
+  },
+];
 
 export default function Home() {
   useEffect(() => {
@@ -205,6 +225,25 @@ export default function Home() {
 
       <section className="mx-auto max-w-7xl px-6 pb-20">
         <div className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Priority crawl paths</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Start from the strongest pages instead of making Google guess</h2>
+          <p className="mt-4 text-base leading-8 text-slate-300">
+            These are the URLs most worth crawling first because they connect directly to the product, the highest-intent workflows, and the strongest topic clusters.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {priorityPages.map((page) => (
+            <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="rounded-[24px] border border-cyan-400/20 bg-cyan-400/10 p-5 transition hover:border-cyan-300 hover:bg-cyan-400/15">
+              <p className="text-xs uppercase tracking-[0.16em] text-cyan-100">{page.category}</p>
+              <h3 className="mt-3 text-lg font-semibold text-white">{page.keyword}</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-200">{page.description}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-20">
+        <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">SEO structure</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">A scalable content architecture for tools, templates, and guides</h2>
           <p className="mt-4 text-base leading-8 text-slate-300">
@@ -218,6 +257,35 @@ export default function Home() {
               <p className="mt-3 text-sm leading-7 text-slate-300">{card.description}</p>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="border-y border-white/10 bg-white/[0.03]">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200">Editorial paths</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Homepage routes into the three most important buyer workflows</h2>
+            <p className="mt-4 text-base leading-8 text-slate-300">
+              Instead of looking like one giant list of similar pages, the homepage now groups entry points by real post-call jobs-to-be-done.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-6 xl:grid-cols-3">
+            {editorialClusters.map((cluster) => (
+              <div key={cluster.title} className="rounded-[28px] border border-white/10 bg-slate-950/60 p-6">
+                <h3 className="text-2xl font-semibold text-white">{cluster.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-300">{cluster.description}</p>
+                <div className="mt-5 space-y-3">
+                  {cluster.pages.map((page) => (
+                    <Link key={page.slug} href={`/${page.category}/${page.slug}`} className="block rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/40 hover:bg-white/10">
+                      <p className="text-xs uppercase tracking-[0.16em] text-cyan-200">{page.category}</p>
+                      <h4 className="mt-2 text-base font-semibold text-white">{page.keyword}</h4>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">{page.description}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
